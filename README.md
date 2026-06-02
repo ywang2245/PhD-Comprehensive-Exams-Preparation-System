@@ -4,6 +4,13 @@
 
 Built because (a) flipping through 70+ PDFs the day before the exam is a terrible idea, and (b) the bus ride home is too long to waste.
 
+## A quick look
+
+| Desktop — full study hub | Mobile — drill-down + flash cards |
+|---|---|
+| ![Desktop home](./screenshots/desktop_home.png) | ![Mobile home](./screenshots/mobile_home.png) |
+| Sidebar nav · 12 weekly modules · cross-cutting themes · past-exam archive | Topic cards · prominent 🎴 Flash Cards entry · safe-area padding |
+
 ## What's inside
 
 Two single-file web apps. No build step. No dependencies. Open the HTML, read the papers.
@@ -38,20 +45,20 @@ Five minutes of flash cards on the bus, every day, adds up to a *lot* of repetit
 
 ## The topics (12 weeks)
 
-| Week | Topic | Date |
-|---|---|---|
-| 1 | Overviews of Leadership | Aug 28 |
-| 2 | Leadership & Levels of Analysis | Sep 11 |
-| 3 | Leadership and Methods | Sep 18 |
-| 4 | Individual Differences & Behaviors | Sep 25 |
-| 5 | Contingency Models | Oct 2 |
-| 6 | Charismatic & Transformational | Oct 9 |
-| 7 | VDL, LMX & Individualized Leadership | Oct 16 |
-| 8 | Implicit Leadership & Followership Theories | Oct 23 |
-| 9 | Leader Development | Oct 30 |
-| 10 | Gender & Leadership | Nov 6 |
-| 11 | Measurement | Nov 13 |
-| 12 | What's Wrong with Leadership? | Nov 20 |
+| Week | Topic |
+|---|---|
+| 1 | Overviews of Leadership |
+| 2 | Leadership & Levels of Analysis |
+| 3 | Leadership and Methods |
+| 4 | Individual Differences & Behaviors |
+| 5 | Contingency Models |
+| 6 | Charismatic & Transformational |
+| 7 | VDL, LMX & Individualized Leadership |
+| 8 | Implicit Leadership & Followership Theories |
+| 9 | Leader Development |
+| 10 | Gender & Leadership |
+| 11 | Measurement |
+| 12 | What's Wrong with Leadership? |
 
 Four other domains (Organizational Behavior, Research Methods, Strategy & OT) are stubbed in on the home screen and will get the same treatment as they're curated.
 
