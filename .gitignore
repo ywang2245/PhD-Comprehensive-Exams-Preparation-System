@@ -1,0 +1,6 @@
+# Exclude PDFs and source materials
+Leadership/
+*.pdf
+.DS_Store
+.vscode/
+.idea/

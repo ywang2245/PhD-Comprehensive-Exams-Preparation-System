@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#4f46e5">
+<title>Comps Mobile</title>
+<style>
+:root {
+  --bg:#f4f6fb; --surface:#fff; --surface2:#f0f3fa;
+  --accent:#4f46e5; --accent2:#7c3aed; --green:#059669; --orange:#d97706;
+  --text:#111827; --muted:#6b7280; --border:#e5e7eb;
+  --shadow:0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ─── App shell ─── */
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+
+/* ─── Header ─── */
+.header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:12px 16px;display:flex;align-items:center;gap:10px;
+  position:sticky;top:0;z-index:10;flex-shrink:0;
+  padding-top:max(12px,env(safe-area-inset-top));
+}
+.back-btn{
+  background:none;border:none;color:var(--accent);font-size:22px;
+  cursor:pointer;padding:4px 8px;display:none;
+}
+.back-btn.show{display:block}
+.header-title{font-size:16px;font-weight:600;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.header-sub{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* ─── Scroll area ─── */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.view{display:none}
+.view.active{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ─── Home ─── */
+.hero{padding:8px 4px 18px}
+.hero h1{font-size:22px;font-weight:700;margin-bottom:4px}
+.hero p{font-size:13px;color:var(--muted)}
+
+.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.topic-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:18px 14px;cursor:pointer;box-shadow:var(--shadow);
+  transition:transform .15s, box-shadow .15s;
+  display:flex;flex-direction:column;min-height:128px;
+}
+.topic-card:active{transform:scale(.97)}
+.topic-card .icon{font-size:26px;margin-bottom:8px}
+.topic-card .name{font-weight:700;font-size:15px;margin-bottom:4px}
+.topic-card .meta{font-size:11.5px;color:var(--muted);margin-top:auto}
+.topic-card.coming{opacity:.55}
+.topic-card.coming .meta{color:var(--orange)}
+
+/* ─── List rows ─── */
+.list-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden;
+}
+.list-row{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;cursor:pointer;
+  transition:background .12s;
+}
+.list-row:active{background:var(--surface2)}
+.list-row + .list-row{border-top:1px solid var(--border)}
+.row-num{
+  flex-shrink:0;width:32px;height:32px;border-radius:50%;
+  background:#eef2ff;color:var(--accent);font-weight:700;font-size:13px;
+  display:flex;align-items:center;justify-content:center;
+}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:600;font-size:14.5px;color:var(--text);line-height:1.35}
+.row-sub{font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-chev{color:var(--muted);font-size:18px;flex-shrink:0}
+
+/* ─── Section labels ─── */
+.section-label{
+  font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);margin:18px 4px 10px;
+}
+.section-label:first-child{margin-top:6px}
+
+/* ─── Paper detail ─── */
+.paper-cite{
+  font-size:13px;color:var(--accent);font-weight:600;
+  background:#eef2ff;padding:6px 10px;border-radius:8px;display:inline-block;margin-bottom:14px;
+}
+.paper-title{font-size:18px;font-weight:700;line-height:1.35;margin-bottom:6px}
+.paper-meta{font-size:12px;color:var(--muted);margin-bottom:18px}
+
+.takeaway-card{
+  background:linear-gradient(135deg,#eef2ff,#f5f3ff);
+  border:1px solid #c7d2fe;border-radius:14px;
+  padding:16px;margin-bottom:18px;
+}
+.takeaway-label{
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.takeaway-body{font-size:14px;line-height:1.6;color:#1f2937}
+
+.detail-section{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);
+}
+.detail-section h3{
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent2);margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.detail-section p, .detail-section li{font-size:13.5px;line-height:1.55;color:#374151}
+.detail-section ul{padding-left:18px;margin-top:4px}
+.detail-section li{margin-bottom:4px}
+
+/* ─── Empty state ─── */
+.empty{
+  text-align:center;padding:40px 20px;color:var(--muted);
+}
+.empty .big{font-size:40px;margin-bottom:12px;opacity:.5}
+.empty p{font-size:14px;margin-bottom:6px}
+
+/* ─── Flash card action button on home ─── */
+.flash-cta{
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  color:#fff;border:none;width:100%;
+  padding:16px 18px;border-radius:14px;margin-bottom:16px;
+  cursor:pointer;box-shadow:var(--shadow-lg);
+  text-align:left;
+}
+.flash-cta:active{transform:scale(.98)}
+.flash-cta .icon{font-size:28px}
+.flash-cta .label{font-weight:700;font-size:15px;margin-bottom:2px}
+.flash-cta .sub{font-size:12px;opacity:.85}
+.flash-cta .arrow{margin-left:auto;font-size:22px;opacity:.85}
+
+/* ─── Flash card view ─── */
+.flash-bar{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+  font-size:12.5px;color:var(--muted);
+}
+.flash-progress{
+  flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;
+}
+.flash-progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));
+  transition:width .3s ease;
+}
+.flash-counter{font-weight:700;color:var(--text);font-size:13px;min-width:54px;text-align:right}
+
+.flash-card{
+  perspective:1500px;
+  width:100%;
+  min-height:430px;
+  margin-bottom:18px;
+}
+.flash-card-inner{
+  position:relative;width:100%;min-height:430px;
+  transition:transform .55s cubic-bezier(.22,.61,.36,1);
+  transform-style:preserve-3d;
+  cursor:pointer;
+}
+.flash-card.flipped .flash-card-inner{transform:rotateY(180deg)}
+.flash-face{
+  position:absolute;inset:0;
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:var(--shadow-lg);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.flash-front{
+  background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 100%);
+  color:#fff;
+  align-items:center;justify-content:center;text-align:center;
+}
+.flash-front .week-chip{
+  background:rgba(255,255,255,.18);
+  padding:6px 12px;border-radius:999px;
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:14px;backdrop-filter:blur(6px);
+}
+.flash-front .week-icon{font-size:38px;margin-bottom:12px}
+.flash-front .cite{font-size:24px;font-weight:700;line-height:1.3;margin-bottom:10px}
+.flash-front .full{font-size:12.5px;opacity:.85;line-height:1.5;max-width:90%}
+.flash-front .tap-hint{
+  position:absolute;bottom:18px;left:0;right:0;
+  font-size:11px;opacity:.7;text-align:center;letter-spacing:.05em;
+}
+.flash-back{
+  background:var(--surface);
+  color:var(--text);
+  transform:rotateY(180deg);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.flash-back .back-cite{
+  font-size:12px;color:var(--accent);font-weight:700;margin-bottom:4px;
+}
+.flash-back .back-week{font-size:11px;color:var(--muted);margin-bottom:14px}
+.flash-back h4{
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent2);margin:14px 0 6px;display:flex;align-items:center;gap:6px;
+}
+.flash-back h4:first-of-type{margin-top:4px}
+.flash-back p{font-size:13.5px;line-height:1.55;color:#374151}
+.flash-back .tap-hint{
+  font-size:11px;color:var(--muted);text-align:center;
+  margin-top:14px;padding-top:10px;border-top:1px dashed var(--border);
+}
+
+.flash-controls{
+  display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px;
+}
+.flash-btn{
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);border-radius:12px;padding:14px;
+  font-size:14px;font-weight:600;cursor:pointer;
+  box-shadow:var(--shadow);
+  transition:all .12s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.flash-btn:active{transform:scale(.96)}
+.flash-btn:disabled{opacity:.4;cursor:not-allowed}
+.flash-btn.primary{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.flash-btn.shuffle{background:var(--surface);color:var(--accent)}
+
+.flash-actions{
+  display:flex;gap:8px;margin-top:12px;
+}
+.flash-action-btn{
+  flex:1;background:var(--surface2);border:none;
+  color:var(--muted);border-radius:10px;padding:10px;
+  font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.flash-action-btn:active{background:#e5e9f5}
+
+/* ─── Tablet/desktop ─── */
+@media(min-width:640px){
+  .scroll{padding:20px 24px;max-width:680px;margin:0 auto;width:100%}
+  .header{padding:14px 24px}
+  .hero h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="header">
+    <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
+    <div style="flex:1;min-width:0">
+      <div class="header-title" id="headerTitle">Comps Review</div>
+      <div class="header-sub" id="headerSub">Doctoral Comprehensive Exam</div>
+    </div>
+  </header>
+
+  <main class="scroll" id="scroll">
+    <!-- HOME -->
+    <section class="view active" id="view-home">
+      <div class="hero">
+        <h1>Comps Review</h1>
+        <p>Choose a topic to study</p>
+      </div>
+      <button class="flash-cta" onclick="go('flashcards')">
+        <div class="icon">🎴</div>
+        <div>
+          <div class="label">Flash Cards</div>
+          <div class="sub">Shuffle all 84 leadership papers · tap to flip</div>
+        </div>
+        <div class="arrow">→</div>
+      </button>
+      <div class="topic-grid">
+        <div class="topic-card" onclick="go('topic-leadership')">
+          <div class="icon">🧭</div>
+          <div class="name">Leadership</div>
+          <div class="meta">12 weeks · 84 readings</div>
+        </div>
+        <div class="topic-card coming" onclick="alert('Coming soon — papers not yet curated.')">
+          <div class="icon">🧠</div>
+          <div class="name">OB</div>
+          <div class="meta">Coming soon</div>
+        </div>
+        <div class="topic-card coming" onclick="alert('Coming soon — papers not yet curated.')">
+          <div class="icon">🔬</div>
+          <div class="name">Research Method</div>
+          <div class="meta">Coming soon</div>
+        </div>
+        <div class="topic-card coming" onclick="alert('Coming soon — papers not yet curated.')">
+          <div class="icon">🏢</div>
+          <div class="name">Strategy & OT</div>
+          <div class="meta">Coming soon</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERSHIP TOPIC (12 weeks list) -->
+    <section class="view" id="view-topic-leadership">
+      <div class="hero">
+        <h1>Leadership</h1>
+        <p>LEAD 601 · Fall 2025 · 12 weekly modules</p>
+      </div>
+      <div class="list-card" id="weeksList"></div>
+    </section>
+
+    <!-- WEEK detail (papers list) -->
+    <section class="view" id="view-week">
+      <div id="weekHero" class="hero"></div>
+      <div class="list-card" id="papersList"></div>
+    </section>
+
+    <!-- PAPER detail -->
+    <section class="view" id="view-paper">
+      <div id="paperBody"></div>
+    </section>
+
+    <!-- FLASH CARDS -->
+    <section class="view" id="view-flashcards">
+      <div class="flash-bar">
+        <div class="flash-progress"><div class="flash-progress-fill" id="flashFill"></div></div>
+        <div class="flash-counter" id="flashCounter">1 / 84</div>
+      </div>
+      <div class="flash-card" id="flashCard" onclick="flipCard()">
+        <div class="flash-card-inner" id="flashInner">
+          <div class="flash-face flash-front" id="flashFront"></div>
+          <div class="flash-face flash-back" id="flashBack"></div>
+        </div>
+      </div>
+      <div class="flash-controls">
+        <button class="flash-btn" id="flashPrev" onclick="event.stopPropagation();prevCard()">← Prev</button>
+        <button class="flash-btn primary" onclick="event.stopPropagation();flipCard()">Flip</button>
+        <button class="flash-btn" id="flashNext" onclick="event.stopPropagation();nextCard()">Next →</button>
+      </div>
+      <div class="flash-actions">
+        <button class="flash-action-btn" onclick="event.stopPropagation();shuffleCards()">🔀 Shuffle</button>
+        <button class="flash-action-btn" onclick="event.stopPropagation();jumpToFirst()">⏮ Restart</button>
+        <button class="flash-action-btn" onclick="event.stopPropagation();openCurrentPaper()">📖 Open detail</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// DATA — 12 weeks, ~70 papers
+// Takeaway = 3-4 sentence summary
+// Detail = structured: rq (research question), theory, method, findings, implications
+// ═══════════════════════════════════════════════════════════════════
+
+const WEEKS = [
+  { id:1, name:"Overviews of Leadership", date:"Aug 28", icon:"🗺️",
+    papers:[
+      { cite:"Yammarino (2013)", full:"Yammarino, F.J. (2013). Leadership: Past, present, and future. JLOS, 20, 149-155.",
+        takeaway:"Traces leadership scholarship across three historical eras (trait/behavior, contingency, contemporary relational/multilevel), mapping how foundational assumptions shifted. Argues the field remains fragmented with no unified theory across contexts, levels, methods. Calls for multilevel frameworks, longitudinal designs, dynamic process perspectives rather than static snapshots.",
+        rq:"How has leadership scholarship evolved, and where should the field go next?",
+        theory:"Historical periodization of leadership thought; multilevel/process framework.",
+        method:"Narrative historical review.",
+        findings:"Three eras identified; persistent fragmentation; over-reliance on cross-sectional, single-level designs.",
+        implications:"Roadmap for integrating levels (individual/dyadic/team/org) and time into leadership theory." },
+      { cite:"Atwater et al. (2014)", full:"Atwater, L.E., Mumford, M.D., Tosi, H.L., & Yammarino, F.J. (2014). Editorial: 25 Years of LQ. Leadership Quarterly, 25, 3-5.",
+        takeaway:"Brief celebratory editorial marking The Leadership Quarterly's 25th anniversary. Traces the journal's founding by Bass, House, and Tosi, succession of senior editors (Yammarino, Hunt, Mumford, Atwater), and editorial innovations. Lists prominent journal awards, Distinguished Scholar recipients, and Top 10 most-cited articles. It is historical/commemorative, NOT a critical review.",
+        rq:"What is LQ's history and editorial trajectory?",
+        theory:"None — editorial.",
+        method:"Editorial commentary.",
+        findings:"Journal grew from new outlet to premier leadership journal; documents editor succession, innovations (LQYR, special issues, ethics code), Top 10 most-cited papers (Podsakoff et al. 1990 TFL; Graen & Uhl-Bien 1995 LMX; Lowe et al. 1996 MLQ meta-analysis).",
+        implications:"Celebratory marker; provides institutional context for LQ's central role in the field." },
+      { cite:"Lord et al. (2017)", full:"Lord, R.G., Day, D.V., Zaccaro, S.J., Avolio, B.J., & Eagly, A.H. (2017). Leadership in applied psychology: Three waves of theory and research. JAP, 102, 434-451.",
+        takeaway:"Proposes three waves: Wave 1 (traits, behaviors, contingency); Wave 2 (information processing, ILTs); Wave 3 (relational, contextual, dynamic — followers as co-constructors). Central argument: move beyond leader-centric theories toward bidirectional influence, context-dependence, and temporal dynamics. Frequently cited as a theoretical roadmap for next-generation leadership research.",
+        rq:"How has applied leadership research evolved, and what conceptual framework integrates it?",
+        theory:"Three-wave framework integrating cognitive, relational, and dynamic perspectives.",
+        method:"Conceptual review.",
+        findings:"Wave 1 — leader-centric; Wave 2 — follower cognition; Wave 3 — relational/contextual.",
+        implications:"Calls for follower agency, context, time as central — not peripheral — to theory." },
+      { cite:"Zhao & Li (2019)", full:"Zhao, H., & Li, C. (2019). A computerized approach to understanding leadership research. LQ, 30, 396-416.",
+        takeaway:"Uses computational text-mining on the LQ archive to map the field's intellectual structure, dominant clusters, and underexplored areas. TFL, LMX, leader traits dominate; many potentially important topics remain marginal. Bibliometric methods are shown as more systematic than narrative reviews.",
+        rq:"What does computational analysis reveal about the leadership field's structure?",
+        theory:"Bibliometrics / scientometrics.",
+        method:"Computerized text-mining (LDA, network analysis) on LQ corpus.",
+        findings:"Dominant clusters: TFL, LMX, traits. Marginal: critical, cross-cultural, dynamic. Citation networks reveal hub authors.",
+        implications:"Demonstrates value of computational meta-science; reveals institutional bias in what gets attention." },
+      { cite:"Gardner et al. (2020)", full:"Gardner, W.L., Lowe, K.B., Meuser, J.D., et al. (2020). The leadership trilogy: A review of LQ's third decade. LQ, 31, 101379.",
+        takeaway:"Comprehensive bibliometric/content analysis of LQ 2008-2018. Documents continued growth in TFL, LMX, authentic leadership and multilevel methods. Raises alarms about publication bias and construct proliferation (servant, authentic, ethical, humble — heavy overlap with TFL). Calls for stronger validation standards and integration-oriented theory.",
+        rq:"What trends, methods, and concerns characterize LQ's third decade?",
+        theory:"Bibliometrics + content analysis.",
+        method:"Coded ~600 LQ articles 2008-2018 for theory, method, level, topic.",
+        findings:"TFL/LMX still dominant; multilevel up; authentic leadership exploded; construct overlap pervasive; publication bias concerns.",
+        implications:"Recommends bifactor tests of construct distinctness, incremental validity requirements before new constructs are accepted." },
+    ]},
+
+  { id:2, name:"Leadership & Levels of Analysis", date:"Sep 11", icon:"📐",
+    papers:[
+      { cite:"Chun et al. (2009)", full:"Chun, J.U., Yammarino, F.J., Dionne, S.D., Sosik, J.J., & Moon, H.K. (2009). Leadership across hierarchical levels. LQ, 20, 689-707.",
+        takeaway:"Develops a framework distinguishing two routes by which executive leadership permeates organizations: cascading (top → middle → front-line, sequential) and bypassing (top → front-line directly, skipping middle). Mid-level managers are not neutral conduits but active filters/amplifiers. Context (span, communication richness, culture) determines which path dominates.",
+        rq:"How do top leaders influence outcomes at lower hierarchical levels?",
+        theory:"Multilevel leadership; cascading and bypassing as alternative diffusion routes.",
+        method:"Theory paper with propositions; reviews supporting evidence.",
+        findings:"Cascading and bypassing operate via different mechanisms; mid-managers can amplify, distort, or block; outcomes vary by level.",
+        implications:"Strategic leadership must be modeled multi-level; mid-managers are an active link, not a transmission belt." },
+      { cite:"DeChurch et al. (2010)", full:"DeChurch, L.A., Hiller, N.J., Murase, T., Doty, D., & Salas, E. (2010). Leadership across levels: Levels of leaders and their levels of impact. LQ, 21, 1069-1085.",
+        takeaway:"Argues leadership theory developed at dyadic/team level has been applied inappropriately to other levels. Executive, middle, and supervisory leaders operate via fundamentally different mechanisms. Calls for level-specific theories rather than adapting dyadic theories upward.",
+        rq:"Do leaders at different levels affect different outcomes through different mechanisms?",
+        theory:"Functional leadership; levels-of-analysis.",
+        method:"Conceptual review across hierarchical levels.",
+        findings:"Executive → direction/culture; middle → strategy-implementation bridge; supervisory → motivation through interpersonal processes.",
+        implications:"Build genuinely level-specific theories; stop generalizing dyadic findings up the hierarchy." },
+      { cite:"Yammarino & Dansereau (2011)", full:"Yammarino, F.J., & Dansereau, F. (2011). Multi-level issues in evolutionary theory, organization science, and leadership. LQ, 22, 1042-1057.",
+        takeaway:"Defends Within-And-Between Analysis (WABA) as a systematic method to empirically determine the level at which leadership relationships actually operate (individual, dyadic, group, collective) rather than assuming a level by theory. Most leadership research implicitly mismodels levels, producing misleading conclusions. WABA provides formal statistical tests to adjudicate.",
+        rq:"How do we empirically determine the correct level of analysis for leadership phenomena?",
+        theory:"WABA; multilevel theory; evolutionary framing of leadership emergence.",
+        method:"Conceptual exposition of WABA + application examples.",
+        findings:"Most studies conflate levels; WABA can recover the actual operating level via E and F tests; level conclusions can reverse upon proper analysis.",
+        implications:"WABA should precede substantive analysis in any leadership study." },
+      { cite:"Dionne et al. (2014)", full:"Dionne, S.D., Gupta, A., Sotak, K.L., et al. (2014). A 25-year perspective on levels of analysis in leadership research. LQ, 25, 6-35.",
+        takeaway:"Reviews 25 years of LQ articles and finds the overwhelming majority misalign at least one of: level of theory, level of measurement, level of analysis. Even self-styled multilevel studies often fail core requirements (e.g., testing whether aggregation is justified). Misalignment yields wrong conclusions — not merely noise.",
+        rq:"How well do LQ studies align theory, measurement, and analysis levels?",
+        theory:"Multilevel framework (Kozlowski & Klein; Klein et al.).",
+        method:"Systematic content analysis of 25 years of LQ articles.",
+        findings:"Most studies are misaligned; aggregation often unjustified; cross-level inferences common but unsupported.",
+        implications:"Provides diagnostic framework; most cited critique of levels practice in leadership." },
+      { cite:"Acton et al. (2019)", full:"Acton, B.P., Foti, R.J., Lord, R.G., & Gladfelter, J.A. (2019). Putting emergence back in leadership emergence. LQ, 30, 145-164.",
+        takeaway:"Argues leadership emergence is inherently dynamic, multilevel, and process-oriented, requiring frameworks/designs that capture temporal unfolding rather than static outcomes. Cross-sectional surveys can identify correlates of who emerges but cannot explain how. Advocates complexity theory, dynamic systems, network analysis, longitudinal designs.",
+        rq:"How can we study leadership emergence as it actually unfolds?",
+        theory:"Complexity theory / dynamic systems; emergence as multilevel process.",
+        method:"Conceptual framework + methodological recommendations.",
+        findings:"Static frameworks miss emergence dynamics; nonlinearity and feedback loops are central; network/longitudinal/ESM are needed tools.",
+        implications:"Reframes emergence as process, not outcome — fundamentally changes the research agenda." },
+      { cite:"Kim et al. (2020)", full:"Kim, J., Yammarino, F.J., Dionne, S.D., et al. (2020). State-of-the-science review of leader-follower dyads research. LQ, 31, 101306.",
+        takeaway:"State-of-the-science review arguing the leader-follower dyad should be the fundamental unit of leadership analysis since leadership is by definition relational. Reviews VDL, LMX, individualized leadership. Identifies measurement/analytical challenges of the dyadic level (non-independence, APIM). Most LMX research fails to operationalize the dyadic construct.",
+        rq:"What is the state of leader-follower dyad research, and how should it move forward?",
+        theory:"Dyadic leadership; VDL/LMX/individualized leadership.",
+        method:"Comprehensive narrative review.",
+        findings:"Dyads remain undermeasured/under-analyzed; most LMX studies use individual measurement; APIM and similar models needed.",
+        implications:"Calls for genuine dyadic methods, mutual measurement, appropriate multilevel models." },
+    ]},
+
+  { id:3, name:"Leadership and Methods", date:"Sep 18", icon:"🔬",
+    papers:[
+      { cite:"Dionne et al. (2010)", full:"Dionne, S.D., Sayama, H., Hao, C., & Bush, B.J. (2010). The role of leadership in shared mental model convergence. LQ, 21, 1035-1049.",
+        takeaway:"Uses agent-based computational modeling to explore how leadership shapes the convergence of team shared mental models (SMM) and downstream team performance. Demonstrates simulation as a tool to test leadership mechanisms when empirical data is hard to collect. Findings show leader involvement accelerates SMM convergence under specific conditions.",
+        rq:"How does leadership influence shared mental model convergence and team performance?",
+        theory:"Shared mental models; complex adaptive systems; computational organizational science.",
+        method:"Agent-based computational simulation.",
+        findings:"Leader-driven information sharing accelerates SMM convergence; effects depend on team size, diversity, network structure.",
+        implications:"Establishes simulation as a legitimate methodological tool in leadership; complements empirical and lab work." },
+      { cite:"Dionne et al. (2012)", full:"Dionne, S.D., Akaishi, J., Chen, X., et al. (2012). Retrospective relatedness reconstruction. ORM, 15, 663-692.",
+        takeaway:"Introduces a method for retrospectively reconstructing dynamic social network ties from cross-sectional or sparse data, applied to adaptive social networks and social sentiment. Provides a workflow for inferring relational structure when continuous longitudinal observation is impossible. Useful for leadership research where past dyadic structure must be inferred from limited data.",
+        rq:"How can researchers retrospectively reconstruct dynamic relational networks?",
+        theory:"Social network analysis; computational modeling.",
+        method:"Mathematical/computational method development + illustrative applications.",
+        findings:"Algorithms can reconstruct plausible relational histories under specified assumptions about decay/sentiment.",
+        implications:"Adds a methodological tool for studying relationship dynamics with limited data." },
+      { cite:"Stentz et al. (2012)", full:"Stentz, J.E., Plano Clark, V.L., & Matkin, G.S. (2012). Applying mixed methods to leadership research. LQ, 23, 1173-1183.",
+        takeaway:"Reviews 25 years of LQ and finds mixed-methods designs are dramatically underrepresented; most published work uses survey-based quantitative methods alone. Cross-sectional surveys severely limit causal claims, process understanding, theory generation. Provides a typology of mixed-methods designs and argues their integration is necessary.",
+        rq:"How are mixed methods used in leadership research, and how should they be used?",
+        theory:"Mixed methods methodology (Plano Clark & Creswell).",
+        method:"Systematic content analysis of LQ articles.",
+        findings:"Mixed methods used in <5% of LQ articles; most are sequential explanatory; few are genuinely integrated.",
+        implications:"Field needs more methodological pluralism; offers typology and examples." },
+      { cite:"Parry et al. (2014)", full:"Parry, K., Mumford, M.D., Bower, I., & Watts, L.L. (2014). Qualitative and historiometric methods in leadership research. LQ, 25, 132-151.",
+        takeaway:"Reviews qualitative and historiometric methods in LQ over 25 years; finds them underutilized despite acknowledged value for theory development and contextual understanding. Historiometric methods (archival analysis of historical figures' leadership) offer unique access to long time horizons impossible to study experimentally. Advocates methodological pluralism.",
+        rq:"What is the state of qualitative and historiometric methods in leadership research?",
+        theory:"Qualitative research methodology; historiometrics (Simonton).",
+        method:"Systematic content analysis of LQ articles.",
+        findings:"Qualitative work ~10% of articles; historiometric rare; both underrepresented relative to value.",
+        implications:"Field's variable-centered quant bias constrains theory; explicit pluralism needed." },
+      { cite:"Markham et al. (2017)", full:"Markham, S.E., Markham, I.S., & Smith, J.W. (2017). A review, analysis, and extension of peer-leader feedback agreement. LQ, 28, 153-177.",
+        takeaway:"Reviews and extends methods for analyzing peer-leader feedback agreement, contrasting group-aggregate agreement vs. self-other agreement using entity analytics and visualization. Develops new analytical/visual approaches that better capture patterns hidden in standard aggregation. Useful for multi-source ratings research.",
+        rq:"How can we better analyze and visualize agreement between peer/leader ratings?",
+        theory:"Entity analytics; group-level vs. dyadic-level agreement.",
+        method:"Analytical/visual technique development + reanalysis of feedback data.",
+        findings:"Standard aggregate scores hide systematic patterns; entity-level visualization reveals subgroup dynamics.",
+        implications:"Provides methods for richer interpretation of 360 feedback and multi-source ratings." },
+      { cite:"Podsakoff & Podsakoff (2019)", full:"Podsakoff, P.M., & Podsakoff, N.P. (2019). Experimental designs in management and leadership research. LQ, 30, 11-33.",
+        takeaway:"Reviews experimental designs in leadership research, distinguishing lab (high internal validity) and field (higher external) experiments and arguing both are dramatically underutilized vs. surveys. Detailed analysis of common method bias and concrete mitigation strategies. Provides a decision framework for choosing appropriate designs.",
+        rq:"How can experimental designs better serve leadership research?",
+        theory:"Experimental design theory; CMB.",
+        method:"Methodological review + decision framework.",
+        findings:"Lab experiments rare; field experiments rarer; CMB is widespread but mitigable; demand characteristics + experimenter effects threats.",
+        implications:"Key reference for defending experimental designs in leadership; practical CMB toolkit." },
+      { cite:"Sieweke & Santoni (2020)", full:"Sieweke, J., & Santoni, S. (2020). Natural experiments in leadership research. LQ, 31, 101338.",
+        takeaway:"Argues natural experiments — situations where an external event creates exogenous variation in leadership — represent a powerful, underutilized tool for causal claims. Examples include CEO succession via sudden death/illness, regulatory discontinuities, lottery assignment. Standard observational designs cannot rule out reverse causality or confounds.",
+        rq:"How can leadership research use natural experiments for causal inference?",
+        theory:"Causal inference; quasi-experiments.",
+        method:"Review + guidelines for identifying and using natural experiments.",
+        findings:"Natural experiments rare in leadership; CEO-death studies, RDD-amenable contexts, and lotteries provide untapped opportunities.",
+        implications:"Practical guidance for moving leadership research toward credible causal claims." },
+      { cite:"Tsai et al. (2022)", full:"Tsai, C.Y., Kim, J., Jin, F., et al. (2022). Polynomial regression analysis and response surface methodology in leadership research. LQ, 33(1), 101592.",
+        takeaway:"Methodological tutorial on polynomial regression and response surface analysis for studying congruence/fit effects (e.g., leader-follower value agreement). Demonstrates that the commonly used difference-score approach is mathematically inappropriate and introduces artifacts. Polynomial regression models main + quadratic + interaction simultaneously; RSA visualizes results in 3D.",
+        rq:"How should congruence/fit be analyzed in leadership research?",
+        theory:"Polynomial regression (Edwards); response surface methodology.",
+        method:"Methodological tutorial + worked examples.",
+        findings:"Difference scores conflate variance and produce misleading results; PRA + RSA preserve information and enable richer interpretation.",
+        implications:"Standard reference for any leader-follower (dis)agreement, person-org fit, or profile similarity study." },
+      { cite:"DeSimone et al. (2021)", full:"DeSimone, J.A., Brannick, M.T., O'Boyle, E.H., & Ryu, J.W. (2021). Recommendations for reviewing meta-analyses in organizational research. ORM, 24(4), 694-717.",
+        takeaway:"Critique of published meta-analyses in leadership/OB literature, arguing that despite 'gold standard' status many contain technical problems undermining conclusions. Issues include inappropriate artifact corrections, inadequate publication bias controls, underpowered moderator analyses, overlapping primary studies. Researchers should not uncritically accept meta-analytic conclusions.",
+        rq:"How should meta-analyses be evaluated, and what common problems do they contain?",
+        theory:"Meta-analytic methodology.",
+        method:"Methodological review + reviewer checklist.",
+        findings:"Frequent under-reporting of methods, weak publication bias treatment, inappropriate weighting, primary-study overlap.",
+        implications:"Practical checklist for authors, reviewers, editors; cautions against treating meta-analyses as definitive." },
+      { cite:"Antonakis (2017)", full:"Antonakis, J. (2017). On doing better science: From thrill of discovery to policy implications. LQ, 28, 5-21.",
+        takeaway:"Provocative methodological critique arguing the field has prioritized the 'thrill of discovery' over the scientific rigor needed for policy-relevant conclusions. Identifies lack of pre-registration, weak power, no replication, over-reliance on correlation. Suggests most published findings may not replicate. Remedies: pre-registration, power analysis, IV/RDD, explicit replication.",
+        rq:"What methodological reforms does leadership research need to be policy-relevant?",
+        theory:"Open science; causal identification.",
+        method:"Methodological manifesto.",
+        findings:"Endemic problems: small samples, no causal identification, no replication, no pre-registration.",
+        implications:"Essential reading on methodological standards expected at doctoral level." },
+      { cite:"Lee & Carpenter (2018)", full:"Lee, A., & Carpenter, N.C. (2018). Seeing eye to eye: A meta-analysis of self-other agreement of leadership. LQ, 29, 253-275.",
+        takeaway:"Meta-analysis of self-other agreement in leadership ratings, finding leaders rate themselves systematically higher than others rate them ('overestimation'). The degree of self-other (dis)agreement itself predicts effectiveness — overestimators tend to underperform. Single-source ratings miss information captured only by multi-source comparisons.",
+        rq:"How do leader self-ratings compare to other-ratings, and what does (dis)agreement predict?",
+        theory:"Self-other agreement; 360-degree feedback.",
+        method:"Meta-analysis (k ≈ 220).",
+        findings:"Mean self-other correlation ~.22; leaders consistently overestimate; degree of agreement predicts effectiveness.",
+        implications:"Multi-source ratings essential as both research strategy and development tool." },
+    ]},
+
+  { id:4, name:"Individual Differences & Behaviors", date:"Sep 25", icon:"🧬",
+    papers:[
+      { cite:"Judge et al. (2002)", full:"Judge, T.A., Bono, J.E., Ilies, R., & Gerhardt, M.W. (2002). Personality and leadership: A qualitative and quantitative review. JAP, 87(4), 765-780.",
+        takeaway:"Landmark meta-analysis using the Five-Factor Model to organize personality-leadership relationships. Across 222 correlations from 73 samples, Extraversion is the most consistent predictor (ρ=.31), followed by Conscientiousness (.28), Neuroticism (-.24), Openness (.24); Agreeableness weak (.08). Multiple R = .48 overall. Provides strong renewed support for the trait approach.",
+        rq:"How are Big Five traits related to leader emergence and effectiveness?",
+        theory:"Five-Factor Model; trait theory; ILT as one mechanism.",
+        method:"Meta-analysis: 222 correlations, 73 samples; moderators = criterion (emergence vs. effectiveness) and setting (business/gov-military/student).",
+        findings:"Extraversion strongest; R = .48 overall, .53 emergence, .39 effectiveness; effects strongest in student samples (R=.63), weakest in gov/military (R=.29).",
+        implications:"Renews trait theory; calls for process models linking traits to leadership outcomes." },
+      { cite:"Podsakoff et al. (2006)", full:"Podsakoff, P.M., Bommer, W.H., Podsakoff, N.P., & MacKenzie, S.B. (2006). Leader reward and punishment behavior. OBHDP, 99(2), 113-142.",
+        takeaway:"Meta-analysis of four leader reward/punishment behaviors (contingent reward, non-contingent reward, contingent punishment, non-contingent punishment) and follower outcomes. Contingent administration is critical: contingent reward strongly positive (ρ=.51 satisfaction); non-contingent punishment broadly detrimental. Justice perceptions and role ambiguity emerge as mediators; longitudinal evidence suggests bidirectionality.",
+        rq:"How do leader reward/punishment behaviors relate to subordinate outcomes, and through what mechanisms?",
+        theory:"Path-goal; reinforcement; transactional/TFL; justice theory.",
+        method:"Meta-analysis with existing + new data; cross-lagged longitudinal analyses for select relationships.",
+        findings:"Contingent reward ρ=.51 satisfaction; non-contingent punishment harms across criteria; justice + role ambiguity plausible mediators; CR/CP causes of satisfaction & absenteeism but consequences of performance.",
+        implications:"Establishes the contingent administration distinction; calls for experimental tests of causal direction." },
+      { cite:"DeRue et al. (2011)", full:"DeRue, D.S., Nahrgang, J.D., Wellman, N., & Humphrey, S.E. (2011). Trait and behavioral theories of leadership: An integration and meta-analytic test. Personnel Psychology, 64(1), 7-52.",
+        takeaway:"Integrates trait and behavioral theories into one model and meta-analytically tests their relative validity. Classifies behaviors as task-, relational-, change-oriented, and passive. Finds behaviors generally explain more variance than traits, and behaviors mediate trait effects. Moves beyond the trait-vs-behavior debate to a coherent process model.",
+        rq:"What is the relative validity of leader traits vs. behaviors for predicting effectiveness?",
+        theory:"Integrated trait-behavioral model; trait activation; categorization theory.",
+        method:"Meta-analysis: 59 studies (13 prior meta-analyses + 46 primary); relative weights analysis + SEM mediation.",
+        findings:"Behaviors > traits for variance explained; behaviors mediate trait effects; task/change behaviors → task performance; relational/change → affective outcomes; passive leadership negative.",
+        implications:"First integrated meta-analytic test of trait + behavior; unified framework where traits work through behaviors." },
+      { cite:"Tuncdogan et al. (2017)", full:"Tuncdogan, A., Acar, O.A., & Stam, D. (2017). Individual differences as antecedents of leader behavior. LQ, 28, 40-64.",
+        takeaway:"Narrative review organizing leader individual differences into physiological, psychological, and background categories and linking them to leader behaviors, follower effects, and multilevel outcomes via a revised process model. Emphasizes underexplored traits (dark triad, regulatory focus, self-regulation) and proposes adding situational strength and trait-activating situations as moderators.",
+        rq:"How do diverse individual differences shape leader behavior and multi-level outcomes?",
+        theory:"Antonakis et al. (2012) leadership process model + situational strength + trait activation.",
+        method:"Narrative literature review.",
+        findings:"Three trait categories proposed; dark-triad mixed (harm + situational benefits like narcissistic emergence); EI/intelligence contested; promotion vs. prevention focus distinguished.",
+        implications:"Pushes field toward integrating diverse individual differences in multi-level moderated models." },
+      { cite:"Zaccaro et al. (2018)", full:"Zaccaro, S.J., Green, J.P., Dubrow, S., & Kolze, M. (2018). Leader individual differences, situational parameters, and leadership outcomes. LQ, 29, 2-43.",
+        takeaway:"Integrative review distinguishing 'foundational traits' (stable: personality, cognitive ability, motives, values, demographics) from 'leadership capacities' (mutable: cognitive skills, social capacities, motivation, expertise). Foundational traits act as precursors to capacities, which drive behaviors and outcomes — moderated by task/social complexity and social acuity/behavioral flexibility.",
+        rq:"How should leader attributes be organized and integrated with situational parameters?",
+        theory:"Performance requirements matching; social information processing; trait activation; ecological affordances.",
+        method:"Integrative review extending Zaccaro et al. (2013); 8 tables synthesizing 2011-2017 evidence.",
+        findings:"Foundational traits → capacities → behaviors → outcomes (moderated by complexity + social acuity); Extraversion, Conscientiousness consistently account for unique variance.",
+        implications:"Calls for pattern/profile approaches, multivariate methods, curvilinear effects; positions trait research in a renaissance." },
+      { cite:"Judge et al. (2004)", full:"Judge, T.A., Piccolo, R.F., & Ilies, R. (2004). The forgotten ones? Validity of consideration and initiating structure. JAP, 89(1), 36-51.",
+        takeaway:"Meta-analysis rehabilitating the Ohio State behaviors (Consideration, Initiating Structure) that had been largely dismissed in the TFL era. Both behaviors have moderately strong generalizable validity: Consideration ρ=.48 overall; Initiating Structure ρ=.29. Consideration → follower satisfaction & motivation; Initiating Structure → leader/group performance. The 'forgotten' behaviors should NOT be abandoned.",
+        rq:"What is the validity of Consideration and Initiating Structure?",
+        theory:"Ohio State behavioral tradition.",
+        method:"Meta-analysis: Consideration k=163 N=20,963; Initiating Structure k=159 N=20,431.",
+        findings:"Both behaviors moderately predict outcomes; Consideration stronger for satisfaction (.46) and satisfaction with leader (.78); IS stronger for leader performance.",
+        implications:"Refutes view that these behaviors are obsolete; calls for reintegration with newer frameworks (LMX, TFL, justice)." },
+      { cite:"Gottfredson & Aguinis (2017)", full:"Gottfredson, R.K., & Aguinis, H. (2017). Leadership behaviors and follower performance: Deductive and inductive examination. JOB, 38(4), 558-591.",
+        takeaway:"Two-study MASEM combining 35 meta-analyses (3,327 studies; 930,349 obs). Examines which mediators best explain how four leader behaviors (consideration, initiating structure, contingent rewards, TFL) → follower performance/OCB. Traditionally hypothesized mediators (role ambiguity, satisfaction) get little support; LMX consistently emerges as strongest, parsimonious mediator across all four behaviors. Suggests relational leadership theory as meta-theoretical principle.",
+        rq:"What mediators best explain how leader behaviors → follower performance/OCB?",
+        theory:"Path-goal, motivation/fairness, social exchange, relational leadership (LMX).",
+        method:"Two-study MASEM (deductive then inductive).",
+        findings:"LMX dominant mediator across all four behaviors; Consideration → performance via LMX (.37); IS direct effect becomes negative once LMX included.",
+        implications:"Theory pruning — LMX as unifying mediator; calls for revision of dominant theoretical rationales." },
+    ]},
+
+  { id:5, name:"Contingency Models", date:"Oct 2", icon:"⚖️",
+    papers:[
+      { cite:"Ayman et al. (1995)", full:"Ayman, R., Chemers, M.M., & Fiedler, F. (1995). The contingency model of leadership effectiveness: Its levels of analysis. LQ, 6, 147-167.",
+        takeaway:"Reviews Fiedler's Contingency Model: effectiveness depends on match between leader style (LPC) and situational favorability (task structure, leader-member relations, position power). Low-LPC leaders effective in very (un)favorable situations; high-LPC in intermediate (inverted-U pattern). Critical levels-of-analysis problem: LPC is individual but situational favorability is contextual.",
+        rq:"How does the LPC × situation interaction predict leader effectiveness, and how should levels be handled?",
+        theory:"Fiedler's Contingency Model; LPC.",
+        method:"Conceptual review + reanalysis.",
+        findings:"Mixed empirical support; predictions hold in aggregate but level-of-analysis muddles individual tests; contextual moderators complicate.",
+        implications:"Need explicit cross-level modeling of person × situation; basic logic still relevant despite measurement issues." },
+      { cite:"House (1996)", full:"House, R.J. (1996). Path-goal theory of leadership: Lessons, legacy, and reformulated theory. LQ, 7, 323-352.",
+        takeaway:"Reformulates path-goal theory. Original: leaders improve motivation by clarifying paths to goals, removing obstacles, providing contingent rewards. Reformulation adds value-based leadership (vision appealing to follower values) and shared leadership (developing follower self-leadership) to the original four styles (directive, supportive, participative, achievement-oriented). Explicitly specifies situational moderators.",
+        rq:"How can path-goal theory be updated to reflect contemporary leadership research?",
+        theory:"Path-goal; expectancy theory.",
+        method:"Theoretical reformulation + propositions.",
+        findings:"Adds value-based + shared leadership styles; specifies task structure, autonomy need, environmental uncertainty as moderators.",
+        implications:"More comprehensive than original; criticized for becoming unwieldy/insufficient parsimony." },
+      { cite:"Kerr & Jermier (1978)", full:"Kerr, S., & Jermier, J. (1978). Substitutes for leadership: Their meaning and measurement. OBHP, 22, 375-403.",
+        takeaway:"Substitutes for leadership framework. Certain follower (ability, experience), task (intrinsic satisfaction, routine), and organizational (cohesion, formalization, distance) characteristics SUBSTITUTE for leadership (make it unnecessary) or NEUTRALIZE its effects. Fundamental challenge to universal leadership theories — sometimes leadership doesn't matter.",
+        rq:"When do leader behaviors become unnecessary or ineffective?",
+        theory:"Substitutes for leadership.",
+        method:"Theory paper with measurement proposals.",
+        findings:"Three categories of substitutes/neutralizers; substitutes provide direction/motivation leader would otherwise supply; neutralizers block leader influence.",
+        implications:"Challenges universal positive effects assumption underlying most leadership theory." },
+      { cite:"Dionne et al. (2002)", full:"Dionne, S.D., Yammarino, F.J., Atwater, L.E., & James, L.R. (2002). Neutralizing substitutes for leadership theory. JAP, 87, 454-464.",
+        takeaway:"Methodological critique of substitutes literature: apparent findings are largely attributable to common source bias — inflation when substitutes and effectiveness are rated by the same follower. When sources are separated, substitutes effects largely disappear/attenuate. Cautionary tale beyond substitutes — applies to any same-source survey research.",
+        rq:"Are substitutes for leadership effects real or common-source artifacts?",
+        theory:"Common source bias; substitutes for leadership.",
+        method:"Empirical study separating sources; reanalysis of substitutes findings.",
+        findings:"Effects largely disappear when measurement sources separated; CMB inflated original findings.",
+        implications:"Cautionary tale for any leadership research relying on same-source surveys." },
+      { cite:"Dionne et al. (2005)", full:"Dionne, S.D., Yammarino, F.J., Howell, J.P., & Villa, J. (2005). Substitutes for leadership, or not. LQ, 16, 169-193.",
+        takeaway:"Revisits substitutes for leadership with methodologically rigorous designs separating measurement sources and adding team-level analysis. Some substitutes survive — particularly at the team level (cohesion, task routineness); others vanish or reverse. Level of analysis matters enormously: individual-level findings often fail to replicate at team level.",
+        rq:"Do substitutes effects survive methodological improvements and multilevel analysis?",
+        theory:"Substitutes for leadership; multilevel modeling.",
+        method:"Multi-source, multi-level empirical study.",
+        findings:"Some substitutes survive at team level; many individual-level findings disappear; level matters as much as source.",
+        implications:"Combines rigor (multi-source) with multilevel sensitivity; trustworthy findings require both." },
+    ]},
+
+  { id:6, name:"Charismatic & Transformational", date:"Oct 9", icon:"✨",
+    papers:[
+      { cite:"Shamir (1991)", full:"Shamir, B. (1991). The charismatic relationship: Alternative explanations and predictions. LQ, 2, 81-104.",
+        takeaway:"Motivational theory of charismatic leadership proposing four distinct mechanisms: personal identification (with leader), social identification (with collective vision), value internalization (adopting leader's values), self-efficacy enhancement (raising follower confidence). Charisma is NOT exchange-based — motivation is intrinsic and identity-based, explaining extraordinary commitment.",
+        rq:"What mechanisms explain extraordinary follower motivation under charismatic leaders?",
+        theory:"Self-concept-based theory of charismatic leadership.",
+        method:"Theoretical paper with propositions.",
+        findings:"Four mechanisms distinguished — predicts when each dominates; intrinsic identity-based motivation distinct from transactional reward.",
+        implications:"Foundational for the motivational mechanism literature in charisma/TFL; influences Shamir, House, & Arthur (1993) and beyond." },
+      { cite:"Waldman & Yammarino (1999)", full:"Waldman, D.A., & Yammarino, F.J. (1999). CEO charismatic leadership: Levels of management and levels of analysis. AMR, 24, 266-285.",
+        takeaway:"Multilevel model of CEO charismatic leadership: operates simultaneously at individual follower level (identification, trust) AND collective organizational level (culture, strategy). Two levels work through different mechanisms — psychological vs. structural/cultural. Critiques aggregating follower charisma perceptions to org level as conflating distinct phenomena.",
+        rq:"How does CEO charisma operate across organizational levels?",
+        theory:"Multilevel charismatic leadership; upper echelons.",
+        method:"Theoretical model with propositions.",
+        findings:"Individual-level effects via identification; collective-level effects via cultural/strategic mechanisms; aggregation is theoretically inappropriate.",
+        implications:"Distinguishes individual-from-collective mechanisms — enables precise predictions about when CEO charisma affects individual vs. org outcomes." },
+      { cite:"House et al. (1991)", full:"House, R.J., Spangler, W.D., & Woycke, J. (1991). Personality and charisma in the U.S. presidency. ASQ, 36, 364-396.",
+        takeaway:"Uses historiometric methods to study personality bases of charismatic leadership in U.S. presidents, rating each on biographically-derived characteristics. Charismatic presidents: dominant, high-energy, strong convictions, exceptional communication. Their presidencies associate with higher follower motivation and crisis performance. Methodologically notable for historical analysis at the highest levels of political leadership.",
+        rq:"What personality bases distinguish charismatic from non-charismatic U.S. presidents?",
+        theory:"Charismatic leadership; presidential leadership.",
+        method:"Historiometric analysis of all U.S. presidents through Reagan.",
+        findings:"Dominance, achievement motivation, conviction predict charisma ratings; charisma correlates with crisis performance.",
+        implications:"Validates charisma theory in high-stakes natural setting; methodological exemplar of historiometrics." },
+      { cite:"Yammarino et al. (1998)", full:"Yammarino, F.J., Dubinsky, A.J., & Spangler, W.D. (1998). Transformational leadership: Individual, dyad, and group levels. LQ, 9, 27-54.",
+        takeaway:"Applies WABA to TFL: TFL implicitly operates at multiple levels (each follower unique vs. group shared perception) but most empirical tests collapse across these levels. Demonstrates empirically the operating level varies across studies/contexts. Theory-measurement misalignment widespread: most studies measure TFL at individual level but theorize it as group-level.",
+        rq:"At what level does TFL actually operate, and is this aligned with how it is measured?",
+        theory:"WABA; TFL multilevel framework.",
+        method:"Multilevel empirical study with WABA tests.",
+        findings:"TFL operating level varies; theory-measurement mismatch widespread; cannot collapse without testing.",
+        implications:"Calls for level-specific measurement instruments and WABA-based testing before TFL conclusions." },
+      { cite:"Judge & Piccolo (2004)", full:"Judge, T.A., & Piccolo, R.F. (2004). Transformational and transactional leadership: A meta-analytic test. JAP, 89, 755-768.",
+        takeaway:"Comprehensive meta-analysis of TFL/transactional model. TFL strongly predicts follower satisfaction (ρ≈.58), motivation (.44), leader effectiveness (.44). Critically: contingent reward (transactional) is nearly as strong a predictor as full TFL composite — challenging the narrative of TFL's unique superiority. TFL adds modest incremental validity due to substantial shared variance.",
+        rq:"What is the relative validity of TFL vs. transactional leadership?",
+        theory:"Full Range Leadership Model (Bass & Avolio).",
+        method:"Meta-analysis across 87 sources.",
+        findings:"TFL ρ=.44 effectiveness; CR nearly as strong; TFL incremental over CR is modest; significant moderators (context, criterion, level).",
+        implications:"Qualifies TFL's superiority claims; CR underappreciated; calls for moderator-aware applications." },
+      { cite:"Bono & Judge (2004)", full:"Bono, J.E., & Judge, T.A. (2004). Personality and transformational and transactional leadership: A meta-analysis. JAP, 89, 901-910.",
+        takeaway:"Meta-analytic test of Big Five → TFL dimensions. Extraversion is strongest personality predictor (ρ≈.24); agreeableness positive; neuroticism negative. Frames personality as distal antecedent, with effect partially mediated by more proximal motivational/interpersonal variables. Personality + leadership style are both relatively stable — TFL training may be constrained by dispositions.",
+        rq:"How do Big Five traits relate to transformational and transactional leadership?",
+        theory:"Big Five trait theory + FRLM.",
+        method:"Meta-analysis.",
+        findings:"Extraversion ρ=.24 with TFL; Neuroticism negative; weak relations overall — personality does not fully account for TFL.",
+        implications:"Personality + leadership style both stable; trait-based selection and developmental design implications." },
+      { cite:"Van Knippenberg & Sitkin (2013)", full:"Van Knippenberg, D., & Sitkin, S.B. (2013). A critical assessment of transformational-charismatic leadership research: Back to the drawing board? AMA, 7, 1-60.",
+        takeaway:"Systematic, devastating critique of TFL research identifying FOUR fundamental problems: (1) no clear testable causal model; (2) construct conflates multiple distinct behavioral components into unjustified composite; (3) measurement confounds behaviors with outcomes (partial tautology); (4) proposed mediators rarely tested. Argues these are not minor methodological issues but fundamental conceptual problems requiring full reconceptualization.",
+        rq:"Are TFL research findings interpretable, or are there fundamental conceptual problems?",
+        theory:"Construct validity; conceptual critique.",
+        method:"Critical review.",
+        findings:"Four fundamental problems documented; widely shared by charismatic leadership; existing findings questionable.",
+        implications:"Most important single critique of dominant paradigm in contemporary leadership; calls for starting over with clearer definitions." },
+      { cite:"Antonakis et al. (2016)", full:"Antonakis, J., Bastardoz, N., Jacquart, P., & Shamir, B. (2016). Charisma: An ill-defined and ill-measured gift. ARO-PB, 3, 293-319.",
+        takeaway:"Charismatic leadership research has become conceptually muddled — 'charisma' used interchangeably with TFL, visionary, and traits. Advocates a signals-based approach: charisma = specific rhetorical/behavioral signals (metaphors, storytelling, voice modulation, nonverbal immediacy) used to engage followers. Objectively observable and trainable, unlike dispositional conceptualizations.",
+        rq:"How should charisma be conceptualized and measured?",
+        theory:"Charisma as signaling (Weber-inspired); communication theory.",
+        method:"Conceptual review + signals framework.",
+        findings:"Catalog of charismatic signals; experimental evidence that signals are trainable and produce charisma attributions.",
+        implications:"Operational, behavioral definition that is testable; bridges leadership and communication research." },
+      { cite:"Banks et al. (2016)", full:"Banks, G.C., McCauley, K.D., Gardner, W.L., & Guler, C.E. (2016). A meta-analytic review of authentic and transformational leadership: A test for redundancy. LQ, 27, 634-652.",
+        takeaway:"Meta-analytic test of discriminant validity between authentic leadership and TFL. Finds substantial conceptual overlap (both emphasize moral values, inspirational behavior) and empirical overlap (intercorrelations high). If authentic cannot predict unique variance beyond TFL, it fails incremental validity. Damaging to the authentic leadership literature, which had positioned itself as distinct/superior.",
+        rq:"Is authentic leadership empirically distinct from transformational leadership?",
+        theory:"Discriminant + incremental validity.",
+        method:"Meta-analysis of relationships with shared outcomes.",
+        findings:"Authentic and TFL correlate too highly to be distinct; authentic adds little incremental validity.",
+        implications:"New constructs must pass discriminant validity; challenges proliferation of 'new genre' constructs." },
+    ]},
+
+  { id:7, name:"VDL, LMX & Individualized", date:"Oct 16", icon:"🤝",
+    papers:[
+      { cite:"Dansereau, Graen & Haga (1975)", full:"Dansereau, F., Graen, G., & Haga, W.J. (1975). A vertical dyad linkage approach to leadership. OBHP, 13, 46-78.",
+        takeaway:"Original Vertical Dyad Linkage (VDL): leadership is NOT a uniform group-level phenomenon but a collection of unique dyadic relationships. Leaders form differentiated relationships with each follower — 'in-group' (high trust, expanded roles, mutual investment) vs. 'out-group' (formal, role-defined). Emerges through role-making negotiation shaped by follower competence, initiative, interest.",
+        rq:"Do leaders treat all subordinates identically, or do they form differentiated dyadic relationships?",
+        theory:"Vertical Dyad Linkage; role theory; social exchange.",
+        method:"Longitudinal field study of housing manager-resident dyads.",
+        findings:"Substantial within-group variation in leader-follower relationships; in-group/out-group differentiation emerges early and predicts attitudes/behavior.",
+        implications:"Revolutionary departure from group-average and purely leader-centric approaches; foundational for LMX." },
+      { cite:"Dansereau (1995)", full:"Dansereau, F. (1995). A dyadic approach to leadership: Creating and nurturing this approach under fire. LQ, 6, 479-490.",
+        takeaway:"Theoretical defense of the dyadic approach against critics. Averaging individual followers' leadership perceptions to a group-level score obscures the within-group variability that VDL argues is meaningful. Elaborates social exchange dynamics, role negotiation, trust development as systematic processes producing heterogeneity (not noise).",
+        rq:"Why should we treat dyadic differentiation as meaningful rather than noise?",
+        theory:"VDL; dyadic-level theory.",
+        method:"Conceptual rejoinder.",
+        findings:"Within-group variance is theoretically meaningful and consequential; averaging discards information central to the theory.",
+        implications:"Theoretical anchor for dyadic-level analysis; critical reference before engaging methodological critiques." },
+      { cite:"Yammarino & Dansereau (2002)", full:"Yammarino, F.J., & Dansereau, F. (2002). Individualized leadership. JLOS, 9, 90-99.",
+        takeaway:"Develops 'individualized leadership' as a formal extension of VDL/LMX. Leadership is by definition individualized — leaders develop distinct relationship patterns calibrated to each follower's characteristics. Individualized leadership is a dyadic-level construct and must be theorized/measured/analyzed at the dyadic level. Provides formal propositions.",
+        rq:"How should individualized leadership be conceptualized and tested?",
+        theory:"Individualized leadership; dyadic-level theory.",
+        method:"Theoretical exposition with propositions.",
+        findings:"Specifies dyadic-level constructs (e.g., support for self-worth, leader's individualized consideration of each follower's needs).",
+        implications:"Formalizes dyadic leadership; links to levels-of-analysis literature." },
+      { cite:"Graen & Uhl-Bien (1995)", full:"Graen, G.B., & Uhl-Bien, M. (1995). Relationship-based approach to leadership: LMX over 25 years. LQ, 6, 219-247.",
+        takeaway:"25-year review of LMX research organized into three domains: leader perspective, follower perspective, dyadic relationship as unit. LMX quality (mutual trust/respect/obligation) predicts satisfaction, commitment, performance, reduced turnover. Theoretical contribution: 'leadership making' — leaders SHOULD proactively cultivate high-quality relationships with all followers, not accept natural in-group/out-group differentiation.",
+        rq:"What has 25 years of LMX research established, and what should be the next steps?",
+        theory:"LMX; leadership making.",
+        method:"Comprehensive narrative review.",
+        findings:"LMX quality robustly predicts a wide range of outcomes; measurement from both perspectives remains underdeveloped.",
+        implications:"Prescriptive 'leadership making' model; multi-perspective measurement as a priority." },
+      { cite:"Schriesheim et al. (1999)", full:"Schriesheim, C.A., Castro, S.L., & Cogliser, C.C. (1999). LMX research: Theory, measurement, and data-analytic practices. LQ, 10(1), 63-113.",
+        takeaway:"Comprehensive psychometric critique of LMX measurement, especially the LMX-7. Problems with factor structure, item wording, conflation of multiple dimensions (affect, loyalty, contribution, professional respect) into a single composite. Identifies fundamental mismatch — LMX is theorized as dyadic but measured as individual ratings analyzed as independent. APIM proposed.",
+        rq:"How adequate are LMX measurement and analytical practices?",
+        theory:"Construct validity; dyadic theory.",
+        method:"Systematic review of measurement and analysis practices.",
+        findings:"LMX-7 has factor structure issues; LMX measurement is individual-level despite dyadic theory; APIM rarely used.",
+        implications:"Remains highly relevant; sets standards for LMX measurement that the field has not fully met." },
+      { cite:"Gooty et al. (2012)", full:"Gooty, J., Serban, A., Thomas, J.S., Gavin, M.B., & Yammarino, F.J. (2012). Use and misuse of levels of analysis in LMX research. LQ, 23, 1080-1103.",
+        takeaway:"Theoretical argument + empirical demonstration: studying LMX (theoretically dyadic) using individual-level data and analyses produces fundamentally different conclusions than analyses at the dyadic level. Same dataset reveals direction, magnitude, significance change across levels — some relationships reverse. A category error: dyadic questions with individual-level methods.",
+        rq:"Does the level used for LMX analysis change the conclusions reached?",
+        theory:"Levels of analysis; LMX.",
+        method:"Theoretical argument + empirical demonstration using single dataset analyzed at multiple levels.",
+        findings:"Conclusions reverse across levels; LMX is misanalyzed in most published research.",
+        implications:"Dyadic methods (APIM) should be a publication requirement for LMX research." },
+      { cite:"Gooty & Yammarino (2016)", full:"Gooty, J., & Yammarino, F.J. (2016). The leader-member exchange relationship: A multi-source, cross-level investigation. JoM, 42, 915-945.",
+        takeaway:"Multi-source, multilevel LMX study assessing both leaders' and followers' perceptions and examining how asymmetric perceptions affect outcomes differently than symmetric ones. Asymmetric perceptions are NOT rare noise but a common pattern — leaders and followers systematically disagree. Effects on performance differ depending on which direction the asymmetry runs.",
+        rq:"How do leader-follower asymmetries in LMX perceptions affect outcomes?",
+        theory:"Dyadic LMX; perceptual asymmetry.",
+        method:"Multi-source field study; cross-level analysis.",
+        findings:"Asymmetric perceptions common; effects on performance differ by direction; symmetric high-LMX dyads strongest.",
+        implications:"LMX theory must treat dyad as site of potential divergence with distinct consequences, not just mutual perception." },
+      { cite:"Gottfredson et al. (2020)", full:"Gottfredson, R.K., Wright, S.L., & Heaphy, E.D. (2020). A critique of the LMX construct: Back to square one. LQ, 31, 101385.",
+        takeaway:"Fundamental discriminant validity test of LMX — does it measure relationship quality, or just follower liking/affect? Across multiple studies and analyses, LMX measures share so much variance with affect/liking they cannot be empirically distinguished. When liking and LMX are both predictors, LMX often fails to predict unique variance. Concludes LMX requires fundamental reconceptualization.",
+        rq:"Is LMX empirically distinguishable from follower affect/liking?",
+        theory:"Construct validity; LMX.",
+        method:"Multi-study empirical investigation.",
+        findings:"LMX and liking too highly correlated to distinguish; LMX adds little unique variance over liking.",
+        implications:"Profound challenge to entire LMX literature; calls for reconceptualization not just better measurement." },
+    ]},
+
+  { id:8, name:"Implicit Leadership & Followership Theories", date:"Oct 23", icon:"🧠",
+    papers:[
+      { cite:"Lord, Foti & De Vader (1984)", full:"Lord, R.G., Foti, R.J., & De Vader, C.L. (1984). A test of leadership categorization theory. OBHP, 34(3), 343-378.",
+        takeaway:"Develops leadership categorization theory: followers perceive/evaluate leaders by matching observed characteristics against cognitive prototypes — abstract mental representations of 'good leaders.' Leader perception is categorization, NOT objective behavioral assessment. The process is automatic, heuristic, largely below conscious awareness. Means follower leadership ratings are contaminated by cognitive bias.",
+        rq:"How do followers cognitively categorize leaders, and what role do prototypes play?",
+        theory:"Cognitive categorization; ILT prototypes.",
+        method:"Multi-study lab investigation with prototype identification + categorization tasks.",
+        findings:"Hierarchical prototype structure; categorization is automatic; ratings reflect prototype-match, not observed behavior.",
+        implications:"Theoretical foundation for ILT paradigm; fundamental measurement problem for follower ratings." },
+      { cite:"Lord et al. (2020)", full:"Lord, R.G., Epitropaki, O., Foti, R.J., & Hansbrough, T.K. (2020). Implicit leadership theories, implicit followership theories, and dynamic processing of leadership information. ARO-PB, 7, 49-74.",
+        takeaway:"Comprehensive review of ILT extending categorization theory with advances in cognitive science, neuroscience, cross-cultural psychology. Argues ILTs are NOT static prototypes but dynamically updated schemas — inherently temporal. Extends ILT to include implicit followership theories (IFTs): bidirectional framework where both leaders and followers filter each other through schemas.",
+        rq:"How should ILT and IFT theory be updated for dynamic, temporal processes?",
+        theory:"ILT/IFT; cognitive science; cross-cultural perspectives.",
+        method:"Integrative review.",
+        findings:"ILTs dynamic, not static; IFTs equally important; cross-cultural variation in prototype content; neural mechanisms identifiable.",
+        implications:"Future directions: experience sampling, dynamic measurement, cross-cultural validation, organizational climate of shared ILTs." },
+      { cite:"Foti et al. (2017)", full:"Foti, R.J., Hansbrough, T.K., Epitropaki, O., & Coyle, P.T. (2017). Dynamic viewpoints on implicit leadership and followership theories. LQ, 28, 261-266.",
+        takeaway:"Develops dynamic perspective on ILTs/IFTs: NOT fixed traits but schemas responsive to experience, feedback, contextual cues. Advocates pattern-oriented (person-centered) analytical approaches (cluster, LPA) that identify distinct groups sharing similar ILT configurations — complementing variable-centered methods. Heterogeneity in ILT content is itself theoretically meaningful.",
+        rq:"How can dynamic, pattern-oriented perspectives advance ILT/IFT research?",
+        theory:"Dynamic ILT/IFT; person-centered analysis.",
+        method:"Editorial introduction to special issue.",
+        findings:"Frames a research agenda: temporal change, pattern heterogeneity, contextual sensitivity.",
+        implications:"Catalyzes person-centered methods in ILT research." },
+      { cite:"DeRue & Ashford (2010)", full:"DeRue, D.S., & Ashford, S.J. (2010). Who will lead and who will follow? A social process of leader identity construction. AMR, 35, 627-647.",
+        takeaway:"Relational identity-based theory of leadership. Leadership identity is co-constructed through dynamic claiming (asserting leader identity through behaviors) and granting (others recognizing/accepting the claim). Bridges ILT and leader identity literatures — both processes are mutually constituting. Claiming is only effective if granted; granting without claiming yields a leader recognized by others but without internalized identity.",
+        rq:"How does leader identity emerge through dynamic social interaction?",
+        theory:"Social identity; identity construction.",
+        method:"Theoretical paper with propositions.",
+        findings:"Claiming and granting are interdependent mechanisms; both are needed for stable leader identity.",
+        implications:"Major framework for leadership emergence; developmental implications for both claiming and granting practice." },
+      { cite:"Keller (1999)", full:"Keller, T. (1999). Images of the familiar: Individual differences and implicit leadership theories. LQ, 10(4), 589-607.",
+        takeaway:"ILT content is NOT culturally uniform — it is substantially shaped by early socialization, particularly relationships with parents and authority figures. Authoritative parenting → ILTs centered on consideration + structure; authoritarian parenting → unidimensional authority-focused ILTs. Early-formed ILTs persist into adult organizational life and shape style preferences.",
+        rq:"How do early socialization experiences shape adult ILTs?",
+        theory:"ILT + developmental psychology.",
+        method:"Empirical study linking parenting recall to ILTs.",
+        findings:"Parenting style predicts adult ILT content; ILTs shape preferred leadership styles in adulthood.",
+        implications:"Developmental perspective on ILTs; explains why followers differ systematically in responses to identical leaders." },
+      { cite:"Foti et al. (2012)", full:"Foti, R.J., Bray, B.C., Thompson, N.J., & Allgood, S.F. (2012). Know thy self, know thy leader: Contributions of a pattern-oriented approach to leadership perceptions. LQ, 23, 702-717.",
+        takeaway:"Demonstrates value of pattern-oriented analytical approaches: identifies empirically distinct subgroups of followers sharing similar prototype configurations and shows different ILT profiles produce different perceptions of the same leader. Self-concept clarity moderates — clearer self-concepts → more stable ILTs and more predictable leadership perceptions.",
+        rq:"Does pattern-oriented analysis reveal ILT heterogeneity missed by variable-centered methods?",
+        theory:"Pattern-oriented analysis; self-concept clarity.",
+        method:"Latent profile analysis on ILT data.",
+        findings:"Distinct ILT profiles identified; profiles predict leadership perception over and above mean ILT scores.",
+        implications:"Methodological contribution: person-centered approaches capture ILT heterogeneity systematically missed." },
+      { cite:"Den Hartog et al. (1999)", full:"Den Hartog, D.N., House, R.J., Hanges, P.J., & Ruiz-Quintanilla, S.A. (1999). Culture-specific and cross-culturally generalizable implicit leadership theories. LQ, 10, 219-256.",
+        takeaway:"GLOBE project: examines which leadership attributes are universally endorsed across cultures vs. culture-specific. Small set universally endorsed (integrity, vision, inspiration). Many attributes (autonomy, self-protection, status-consciousness) show large cross-cultural variation. Universal claims from Western samples may not generalize.",
+        rq:"Which ILT attributes are universal vs. culture-specific?",
+        theory:"Cross-cultural ILT (GLOBE).",
+        method:"GLOBE project survey across 62 cultures.",
+        findings:"Identifies universally endorsed attributes (charisma/value-based, team-oriented); culture-specific attributes (autonomous, self-protective).",
+        implications:"Foundation for cross-cultural leadership theory; cautions against Western generalization." },
+      { cite:"Sy (2010)", full:"Sy, T. (2010). What do you think of followers? Examining implicit followership theories. OBHDP, 113, 73-84.",
+        takeaway:"Introduces implicit followership theories (IFTs) as the counterpart to ILTs: leaders hold cognitive schemas about what followers are like, with consequential effects on how they treat followers. IFTs include positive (industriousness, enthusiasm) and negative (conformity, incompetence) dimensions. Positive IFT → more autonomy/development opportunities; negative → more surveillance/limited opportunity.",
+        rq:"Do leaders hold schemas about followers, and what are the consequences?",
+        theory:"Implicit followership theories.",
+        method:"Multi-study scale development + correlational tests.",
+        findings:"Six-factor structure (industry, good citizen, enthusiasm; conformity, insubordination, incompetence); IFTs predict leader behavior toward followers.",
+        implications:"Completes ILT framework — leadership perception is bidirectional, both sets of biases compound." },
+    ]},
+
+  { id:9, name:"Leader Development", date:"Oct 30", icon:"🌱",
+    papers:[
+      { cite:"Day et al. (2021)", full:"Day, D.V., Riggio, R.E., Tan, S.J., & Conger, J.A. (2021). Advancing the science of 21st century leadership development. LQ, 32, 101557.",
+        takeaway:"Synthesizes state of leadership development science. Critical distinction: leader development (building individual leaders' KSAs) vs. leadership development (building collective org/team capacity for leadership functions regardless of formal role). Reviews 360 feedback, developmental assignments, coaching, mentoring — variable effects depending on implementation quality. Identity-based development is powerful but underused.",
+        rq:"What is the state of 21st-century leadership development research, and where should it go?",
+        theory:"Leader/leadership development distinction; identity-based development.",
+        method:"Integrative review.",
+        findings:"Existing interventions show meaningful but variable effects; identity-based methods underused; longitudinal evaluation rare.",
+        implications:"Calls for theory-driven, longitudinal evaluation; emphasizes identity as central mechanism." },
+      { cite:"Day et al. (2014)", full:"Day, D.V., Fleenor, J.W., Atwater, L.E., Sturm, R.E., & McKee, R.A. (2014). Advances in leader and leadership development: A review of 25 years. LQ, 25(1), 63-82.",
+        takeaway:"Reviews 25 years of LQ leadership development research. Finds substantial growth but persistent theoretical/methodological weaknesses relative to the topic's practical importance. Field has been driven by training-industry concerns rather than theory. Identity development is the central mechanism for lasting change. Over-reliance on self-report and single time-point assessments.",
+        rq:"What progress has leadership development science made in 25 years?",
+        theory:"Identity-based leadership development.",
+        method:"Systematic content review.",
+        findings:"Industry-driven over theory-driven; weak measurement; identity development underutilized.",
+        implications:"Identity is central mechanism; longitudinal designs needed." },
+      { cite:"Day & Liu (2019)", full:"Day, D.V., & Liu, Z. (2019). What is wrong with leadership development and what might be done about it? In What's Wrong with Leadership? Routledge.",
+        takeaway:"Critique of the leadership development industry: striking disconnect between enormous scale ($billions annually) and weak scientific evidence base. Diagnoses atheoretical programs, no control groups, no follow-up beyond reaction surveys, vague success criteria. Solutions: theory-driven design specifying mechanisms, longitudinal behavioral outcomes in work settings, randomized/quasi-experimental designs.",
+        rq:"Why doesn't the leadership development industry produce credible evidence?",
+        theory:"Causal inference; program evaluation.",
+        method:"Critical chapter review.",
+        findings:"Programs atheoretical, no controls, no longitudinal evaluation, tautological success criteria.",
+        implications:"Essential reference for critiquing the practice-science gap." },
+      { cite:"Eva et al. (2021)", full:"Eva, N., Wolfram Cox, J., Tse, H.H.M., & Lowe, K.B. (2021). From competency to conversation: A multi-perspective approach to collective leadership development. LQ, 32(5), 101346.",
+        takeaway:"Critique of the dominant competency-based model — identifies a set of skills and trains them in individual leaders — for perpetuating a hero-leader model that's both empirically questionable and practically limiting. Proposes a conversation-based approach building relational, dialogic, sense-making skills enabling leaders + followers to co-construct shared meaning. Leadership development = developing collective capacity.",
+        rq:"How should leadership development shift from competency-based to collective conversation-based approaches?",
+        theory:"Collective leadership; relational/dialogic perspectives.",
+        method:"Conceptual paper with framework + agenda.",
+        findings:"Competency model perpetuates hero-leader; conversation/sense-making approach better fits distributed leadership theory.",
+        implications:"Connects to shared/distributed leadership; reframes development at system rather than individual level." },
+    ]},
+
+  { id:10, name:"Gender & Leadership", date:"Nov 6", icon:"♀️",
+    papers:[
+      { cite:"Eagly & Johnson (1990)", full:"Eagly, A.H., & Johnson, B.T. (1990). Gender and leadership style: A meta-analysis. Psychological Bulletin, 108(2), 233-256.",
+        takeaway:"Landmark meta-analysis of gender and leadership style. Women tend toward more democratic/participative styles; men toward more autocratic/directive. Critically, these differences are SUBSTANTIALLY MODERATED by organizational context — when roles are strongly gender-typed or require specific behaviors, gender differences attenuate or disappear because role expectations override gender socialization.",
+        rq:"Do men and women lead differently?",
+        theory:"Social role theory; gender socialization.",
+        method:"Meta-analysis.",
+        findings:"Small but consistent differences in lab; nearly disappear in field organizational roles; democratic style more pronounced in women.",
+        implications:"Gender differences are real but contextually situated; sets stage for subsequent gender-leadership research." },
+      { cite:"Heilman & Eagly (2008)", full:"Heilman, M.E., & Eagly, A.H. (2008). Gender stereotypes are alive, well, and busy producing workplace discrimination. IOP, 1(4), 393-398.",
+        takeaway:"Synthesizes how gender stereotypes produce systematic disadvantages for women in leadership. Distinguishes descriptive stereotypes (what women ARE like) from prescriptive (what women SHOULD be like). Women face a 'double bind': effective leadership requires traits (assertive, decisive) inconsistent with prescriptive female norms (warm, communal). Adopting leader behaviors → backlash; conforming to female norms → judged as lacking competence.",
+        rq:"How do gender stereotypes produce workplace discrimination against female leaders?",
+        theory:"Lack of fit; role congruity; descriptive vs. prescriptive stereotypes.",
+        method:"Conceptual/integrative review.",
+        findings:"Descriptive + prescriptive stereotypes produce double-bind; both backlash and competence-deficit attributions block women.",
+        implications:"Articulates structural mechanisms requiring organizational/cultural change for gender equality in leadership." },
+      { cite:"Lau et al. (2023)", full:"Lau, V.W., Scott, V.L., Warren, M.A., & Bligh, M.C. (2023). Moving from problems to solutions: Gender equality interventions using an ecological systems approach. JOB, 44(2), 399-419.",
+        takeaway:"Reviews gender equality interventions using an ecological systems framework: individual-level (training, mentoring), organizational-level (structural changes to hiring, promotion, evaluation), societal-level (policy, culture). Individual-level interventions show limited lasting change because they target individuals within biased systems. Organizational-level structural interventions (anonymized applications, standardized criteria) show much stronger effects.",
+        rq:"Which gender equality interventions actually work, and at what level?",
+        theory:"Ecological systems theory.",
+        method:"Systematic review of interventions.",
+        findings:"Individual interventions weak; structural interventions strong; multi-level approaches most effective.",
+        implications:"Locates the problem in systems, not individual deficiencies; structural change is the highest-leverage intervention." },
+      { cite:"Johnson et al. (2008)", full:"Johnson, S.K., Murphy, S.E., Zewdie, S., & Reichard, R.J. (2008). The strong, sensitive type: Effects of gender stereotypes and leadership prototypes on evaluation of male and female leaders. OBHDP, 106(1), 39-60.",
+        takeaway:"Connects ILT literature with gender literature. Leader prototypes in Western cultures are systematically male-typed (agency, assertiveness, competence) overlapping with men far more than women. Creates structural disadvantage: women must overcome BOTH categorization barrier (mismatch with prototype) AND prescriptive norm barrier (penalty for adopting male-typed behaviors that would match the prototype). Experimental evidence: women face no-win character of the double bind.",
+        rq:"How do leader prototypes interact with gender stereotypes to produce evaluation bias?",
+        theory:"ILT + social role theory.",
+        method:"Experimental + correlational studies.",
+        findings:"Leader prototype is male-typed; women in 'sensitive' style evaluated worse than men in same style; women in 'insensitive' style evaluated even worse.",
+        implications:"Integrates cognitive (ILT) + social role mechanisms into unified account of gender inequality in leadership perception." },
+    ]},
+
+  { id:11, name:"Measurement", date:"Nov 13", icon:"📏",
+    papers:[
+      { cite:"Rush et al. (1977)", full:"Rush, M.C., Thomas, J.C., & Lord, R.G. (1977). Implicit leadership theory: A potential threat to internal validity of leader behavior questionnaires. OBHP, 20, 93-110.",
+        takeaway:"Foundational measurement critique. Demonstrates that follower cognitive schemas associating certain leader behaviors with certain performance outcomes contaminate leadership ratings. Elegant experiment: manipulating only the described performance outcome of a leader's group changes how followers rate the leader's behaviors — even with all behavioral descriptions held constant. Ratings reflect schema-driven attribution, NOT observation.",
+        rq:"Do follower behavioral ratings reflect actual behavior or schema-driven inference?",
+        theory:"ILT; attribution theory.",
+        method:"Experimental manipulation of performance information.",
+        findings:"Performance information alone changes leader-behavior ratings; ratings reflect attribution rather than observation.",
+        implications:"Foundational text for the measurement validity critique; threats persist in modern leadership rating research." },
+      { cite:"Brown & Keeping (2005)", full:"Brown, D.J., & Keeping, L.M. (2005). Elaborating the construct of transformational leadership: The role of affect. LQ, 16(2), 245-273.",
+        takeaway:"Follower affect toward / liking of the leader substantially inflates TFL ratings. Followers who like their leader report higher TFL even after controlling for actual behavior. When liking is statistically controlled, TFL → outcomes relationships attenuate substantially. Are TFL ratings measures of specific behaviors, or expressions of general positivity? Implication: all follower-rated leadership measures are potentially contaminated by affective halo.",
+        rq:"Do TFL ratings reflect specific leader behaviors or general affect toward the leader?",
+        theory:"Affect contamination; TFL measurement validity.",
+        method:"Empirical study controlling for liking.",
+        findings:"Affect inflates TFL ratings; TFL → outcomes relationships substantially attenuate when affect controlled.",
+        implications:"Methodological caution for all follower-rated leadership measurement." },
+      { cite:"Yammarino et al. (2020)", full:"Yammarino, F.J., Cheong, M., Kim, J., & Tsai, C.-Y. (2020). Is leadership more than 'I like my boss'? RPHRM, 38, 1-55.",
+        takeaway:"Investigation across TFL, LMX, authentic leadership of whether ratings can be distinguished from simply how much the follower likes the leader. Central finding: across multiple designs, follower affect predicts leadership ratings more strongly than any objective behavioral measure. When liking is controlled, predictive relationships substantially attenuate. Fundamental challenge to the construct validity of the entire measurement apparatus.",
+        rq:"Are standard leadership ratings empirically distinct from follower liking?",
+        theory:"Construct validity; affect contamination.",
+        method:"Multi-study program across multiple measures.",
+        findings:"Liking dominates ratings; when controlled, outcome relationships shrink dramatically across measures.",
+        implications:"Profound challenge to construct validity of leadership measurement; calls for behavioral observation/ESM." },
+      { cite:"Hansbrough et al. (2015)", full:"Hansbrough, T.K., Lord, R.G., & Schyns, B. (2015). Reconsidering the accuracy of follower leadership ratings. LQ, 26, 220-237.",
+        takeaway:"Develops theoretical model of leadership rating accuracy specifying cognitive conditions under which ratings reflect actual behavior vs. ILT-driven inference. Accurate ratings require: adequate observation opportunity; sufficient cognitive resources to process behavior carefully; low ILT salience; motivation to rate accurately. Most organizational contexts violate these conditions — ratings should be expected to be systematically inaccurate.",
+        rq:"Under what cognitive conditions are follower leadership ratings accurate?",
+        theory:"Cognitive accuracy; ILT contamination.",
+        method:"Theoretical model + propositions.",
+        findings:"Specifies four cognitive prerequisites for accuracy; most settings violate them.",
+        implications:"Predicts when leadership ratings should be trusted and when not — most existing research falls in 'not.'" },
+      { cite:"Hansbrough et al. (2021)", full:"Hansbrough, T.K., Lord, R.G., Schyns, B., et al. (2021). Do you remember? Rater memory systems and leadership measurement. LQ, 32, 101455.",
+        takeaway:"Applies cognitive science research on memory systems to leadership measurement. Distinguishes episodic memory (specific events) vs. semantic memory (stored generalizations). Survey items ostensibly ask about specific behaviors but followers retrieve semantic memory — general impressions, inferred traits — not episodic. Survey leadership measures are systematically measuring trait inferences, NOT behavioral observation, regardless of item wording.",
+        rq:"Which memory systems do followers use when responding to behavioral leadership items?",
+        theory:"Memory systems (episodic vs. semantic).",
+        method:"Conceptual paper integrating cognitive memory research.",
+        findings:"Survey items invoke semantic memory; behavioral ratings systematically reflect trait inference.",
+        implications:"Fundamental measurement reconceptualization needed; ESM, behavioral diaries, real-time observation engage episodic memory." },
+      { cite:"Banks et al. (2021)", full:"Banks, G.C., Woznyji, H.M., & Mansfield, C.A. (2021). Where is 'behavior' in organizational behavior? A call for revolution. LQ, 101581.",
+        takeaway:"Examines the irony: despite 'behavior' centrality in OB self-definition, most studies do NOT measure actual behavior but follower perceptions via retrospective survey — shaped by schemas and affect, not behavioral reality. Catalogues methods in LQ; near-complete absence of direct behavioral observation, ESM, passive sensing. Proposes three alternatives: behavioral coding of recorded interactions, ESM in real time, passive sensing (wearables, digital traces).",
+        rq:"Does leadership research actually measure behavior, and what alternatives exist?",
+        theory:"Behavioral observation methodology.",
+        method:"Systematic methodological audit + alternatives proposal.",
+        findings:"<1% of LQ studies measure actual behavior; ESM, behavioral coding, passive sensing systematically absent.",
+        implications:"Without these alternatives, field cannot answer fundamental questions about what leaders actually do." },
+      { cite:"Arnulf et al. (2014)", full:"Arnulf, J.K., Larsen, K.R., Martinsen, Ø.L., & Bong, C.H. (2014). Predicting survey responses: How and why semantics shape survey statistics. PLoS ONE, 9.",
+        takeaway:"Demonstrates that semantic similarity between survey items produces statistical correlations even when there is NO real psychological relationship between constructs — 'semantic confounding.' Compelling demonstration: syntactically random item strings semantically similar to leadership items generate correlations comparable to those in published studies. Substantial portions of published inter-construct correlations may be linguistic artifacts.",
+        rq:"Are survey correlations driven by psychological relationships or semantic similarity of items?",
+        theory:"Semantic confounding; psychometric ontology.",
+        method:"Computational analyses of item semantics; reanalysis of published correlations.",
+        findings:"Semantic similarity alone produces strong correlations; ~50% of leadership-outcome correlations could be linguistic artifact.",
+        implications:"Methods needed to separate semantic from substantive associations; cross-language validation; semantically orthogonal instruments." },
+      { cite:"Arnulf & Larsen (2021)", full:"Arnulf, J.K., & Larsen, K.R. (2021). Semantic and ontological structures of psychological attributes. In Measuring and Modeling Persons and Situations. Academic Press.",
+        takeaway:"Extends semantic confounding argument to fundamental ontological level — questions whether psychological constructs (including leadership constructs) are real psychological entities existing independently of language, or artifacts of linguistic practice. Goes beyond measurement: constructs themselves may be socially constituted through language. If so, factor analyses and meta-analyses cannot reveal 'true' construct relationships.",
+        rq:"Are psychological constructs real entities or linguistic artifacts?",
+        theory:"Ontological status of psychological constructs.",
+        method:"Conceptual/philosophical analysis.",
+        findings:"Argues many constructs may be linguistic, not psychological; profound implications for research programs built on them.",
+        implications:"Calls for greater philosophical sophistication about construct ontology in organizational research." },
+      { cite:"Alvesson & Einola (2019)", full:"Alvesson, M., & Einola, K. (2019). Warning for excessive positivity: Authentic leadership and other traps in leadership studies. LQ, 30, 383-395.",
+        takeaway:"Critiques 'excessive positivity trap' in leadership research. Constructs like authentic leadership are fundamentally normative/idealized rather than descriptive/analytical — they define what leadership SHOULD be then measure conformity, which is tautological not scientific. Measurement instruments function more like value-laden questionnaires about being a good person than theory-driven measures of behaviors with testable causal effects.",
+        rq:"Do popular leadership constructs (especially authentic leadership) confuse normative ideals with empirical analysis?",
+        theory:"Critical leadership studies.",
+        method:"Critical conceptual analysis.",
+        findings:"Authentic leadership defined tautologically; measurement is value-laden; serves to legitimate managerial authority.",
+        implications:"Distinguishes scientific from normative inquiry; calls for less ideologically loaded constructs." },
+    ]},
+
+  { id:12, name:"What's Wrong with Leadership?", date:"Nov 20", icon:"⚠️",
+    papers:[
+      { cite:"Antonakis et al. (2010)", full:"Antonakis, J., Bendahan, S., Jacquart, P., & Lalive, R. (2010). On making causal claims: A review and recommendations. LQ, 21, 1086-1120.",
+        takeaway:"Methodological manifesto for causal inference in leadership research. Documents endemic reliance on correlational designs that cannot distinguish whether leadership causes outcomes, outcomes cause leadership perceptions, or a third variable causes both. Provides taxonomy of causal strategies: randomized experiments, instrumental variables, regression discontinuity, natural experiments. Argues accumulated leadership research cannot answer the fundamental causal question.",
+        rq:"How can leadership research establish credible causal claims?",
+        theory:"Causal inference; endogeneity.",
+        method:"Methodological review + taxonomy.",
+        findings:"Correlational designs dominate; causal claims unwarranted; specific strategies (RCT, IV, RDD, natural experiments) needed.",
+        implications:"Cannot answer 'does leadership cause outcomes?' without these methods; foundational reference." },
+      { cite:"Banks et al. (2018)", full:"Banks, G.C., Gooty, J., Ross, R.L., Williams, C.E., & Harrington, N.T. (2018). Construct redundancy in leader behaviors. LQ, 29, 236-251.",
+        takeaway:"Meta-analytic examination of construct redundancy among major 'positive' leader behavior constructs (TFL, authentic, servant, ethical). Intercorrelations so high they cannot be empirically distinguished. Bifactor modeling partitions variance into shared general factor (general positive leadership) + small/inconsistent unique factors. Implies decades of separate research programs may have been studying the same construct under different labels.",
+        rq:"Are TFL, authentic, servant, and ethical leadership truly distinct constructs?",
+        theory:"Construct redundancy; bifactor modeling.",
+        method:"Meta-analysis + bifactor modeling.",
+        findings:"General positive leadership factor explains most variance; unique factors small and inconsistently related to outcomes.",
+        implications:"Calls for systematic use of bifactor modeling to separate shared from unique variance." },
+      { cite:"Heggestad et al. (2019)", full:"Heggestad, E.D., Scheaf, D.J., Banks, G.C., et al. (2019). Scale adaptions in organizational science research. JoM, 45(6), 2596-2627.",
+        takeaway:"Reviews practice of scale adaptation — modifying existing scales for study contexts — and finds it extremely common but rarely accompanied by psychometric validation. Adaptations introduce altered factor structure, differential item functioning, reduced comparability with original validation research. Provides framework for when adaptations are justified and what validation steps are required.",
+        rq:"Are scale adaptations psychometrically validated, and what should be required?",
+        theory:"Psychometric validation; measurement equivalence.",
+        method:"Systematic review of adaptation practices + best-practice framework.",
+        findings:"Adaptations widespread; validation rare; serious comparability concerns (e.g., abbreviated MLQ versions).",
+        implications:"Provides best-practice checklist; raises serious questions about cross-study comparability in leadership research." },
+      { cite:"Yammarino & Dionne (2018)", full:"Yammarino, F.J., & Dionne, S.D. (2018). Leadership and levels of analysis: Clarifications and fixes for what's wrong. In What's Wrong with Leadership? Routledge, 41-57.",
+        takeaway:"Formal taxonomy of three levels-of-analysis errors in leadership research: (1) wrong level of theory (theorize one level, imply another); (2) measurement mismatch (measure at different level than theorized); (3) analytic misalignment (analyze at different level than theorized/measured). Provides specific corrective strategies for each error type. Transforms general 'levels problems' criticism into actionable framework.",
+        rq:"What kinds of levels-of-analysis errors does leadership research make, and how can they be fixed?",
+        theory:"Levels-of-analysis; multilevel theory.",
+        method:"Conceptual taxonomy + corrective strategies + application to major theories.",
+        findings:"Three error types defined; errors cluster around TFL and LMX; specific fixes available for each.",
+        implications:"Diagnostic and prescriptive framework for any leadership researcher dealing with multiple levels." },
+      { cite:"Castillo & Trinh (2018)", full:"Castillo, E.A., & Trinh, M.P. (2018). In search of missing time: A review of the study of time in leadership research. LQ, 29, 165-178.",
+        takeaway:"Argues leadership has a fundamental temporal blind spot — despite being inherently dynamic, the overwhelming majority of studies use cross-sectional designs treating leadership as static. Identifies four neglected temporal dimensions: timing (when behavior occurs), pacing (how quickly relationships develop), sequencing (order of behaviors), duration (how long effects persist). Advocates longitudinal panel designs, ESM, growth curve modeling.",
+        rq:"How is time treated in leadership research, and what is missed?",
+        theory:"Temporal dimensions of leadership.",
+        method:"Conceptual review + methodological recommendations.",
+        findings:"~95% of studies cross-sectional; four temporal dimensions identified but underexamined.",
+        implications:"Methodological toolkit recommendations: panel designs, ESM, growth modeling as minimum standards." },
+      { cite:"Lord (2019)", full:"Lord, R.G. (2019). Leadership and the medium of time. In Leadership: An Annual Review (and related volumes).",
+        takeaway:"Time is not merely methodological consideration but fundamental conceptual dimension that should be theorized explicitly. Distinguishes variance theories (stable individual differences + static situations) vs. process theories (how things unfold, accumulate, decay). Dominance of variance theories treats leadership as attribute of persons rather than process. Calls for reconceptualization from 'what traits/behaviors predict effectiveness?' to 'how does effective leadership develop over time?'",
+        rq:"How should leadership research theorize time as a fundamental dimension?",
+        theory:"Process theories vs. variance theories.",
+        method:"Conceptual/theoretical paper.",
+        findings:"Variance theories dominate; treat leadership as attribute; process theory needed for genuine understanding.",
+        implications:"Reconceptualization of research questions toward process and development." },
+      { cite:"Alvesson (2020)", full:"Alvesson, M. (2020). Upbeat leadership: A recipe for or against 'successful' leadership studies. LQ, 31, 101439.",
+        takeaway:"Critiques 'upbeat leadership' — systematic tendency of mainstream leadership researchers to ASSUME leadership is inherently positive and to design work around maximizing benefits rather than questioning whether leadership is beneficial. Bias deeply embedded in assumptions, instruments, funding, publication culture. Consequences: dark side underexamined, power dynamics ignored, follower agency neglected.",
+        rq:"Why does mainstream leadership research systematically ignore the dark side of leadership?",
+        theory:"Critical leadership studies.",
+        method:"Critical conceptual analysis.",
+        findings:"Upbeat bias structural, not just individual; serves managerial interests; produces incomplete and ideological theory.",
+        implications:"Calls for more critical/reflexive research program; explicitly question leadership's value rather than assume it." },
+      { cite:"Hunter et al. (2007)", full:"Hunter, S.T., Bedell-Avers, K.E., & Mumford, M.D. (2007). The typical leadership study: Assumptions, implications, and potential remedies. LQ, 18, 435-446.",
+        takeaway:"Systematic empirical audit of leadership study methodology: overwhelming prevalence of a generic template — self-reported leadership from followers in convenience samples at a single time point, no control group, no objective criterion. Template cannot establish causality (correlational), detect change (no longitudinal data), generalize (convenience samples), or rule out alternatives (no controls). Despite decades of critique, template remains stable.",
+        rq:"What methodology characterizes typical leadership studies, and what are its limitations?",
+        theory:"Methodological audit.",
+        method:"Coding of representative sample of leadership studies.",
+        findings:"~80% match the template; alternative designs rare; problems persist across decades.",
+        implications:"Field-level incentives perpetuate flawed template; longitudinal, multi-source, quasi-experimental designs needed." },
+    ]},
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// ROUTING
+// ═══════════════════════════════════════════════════════════════════
+
+const navStack = [];
+
+function show(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(view).classList.add('active');
+  document.getElementById('scroll').scrollTop = 0;
+}
+
+function setHeader(title, sub, showBack){
+  document.getElementById('headerTitle').textContent = title;
+  document.getElementById('headerSub').textContent = sub || '';
+  document.getElementById('backBtn').classList.toggle('show', !!showBack);
+}
+
+function go(route, push=true){
+  if(push) navStack.push(route);
+  location.hash = route;
+  render(route);
+}
+
+function goBack(){
+  navStack.pop();
+  const prev = navStack[navStack.length-1] || 'home';
+  location.hash = prev === 'home' ? '' : prev;
+  render(prev);
+}
+
+function render(route){
+  if(!route || route==='home'){
+    setHeader('Comps Review','Doctoral Comprehensive Exam',false);
+    show('view-home');
+    return;
+  }
+  if(route==='flashcards'){
+    setHeader('Flash Cards','Tap card to flip · Leadership',true);
+    ensureDeck();
+    renderFlash();
+    show('view-flashcards');
+    return;
+  }
+  if(route==='topic-leadership'){
+    setHeader('Leadership','LEAD 601 · 12 weekly modules',true);
+    renderWeeks();
+    show('view-topic-leadership');
+    return;
+  }
+  const wMatch = route.match(/^week-(\d+)$/);
+  if(wMatch){
+    const w = WEEKS.find(x=>x.id==wMatch[1]);
+    setHeader(`Week ${w.id}: ${w.name}`, `${w.date} · ${w.papers.length} papers`, true);
+    renderPapers(w);
+    show('view-week');
+    return;
+  }
+  const pMatch = route.match(/^paper-(\d+)-(\d+)$/);
+  if(pMatch){
+    const w = WEEKS.find(x=>x.id==pMatch[1]);
+    const p = w.papers[pMatch[2]];
+    setHeader(w.name, w.date, true);
+    renderPaper(w,p);
+    show('view-paper');
+    return;
+  }
+  render('home');
+}
+
+function renderWeeks(){
+  const html = WEEKS.map(w=>`
+    <div class="list-row" onclick="go('week-${w.id}')">
+      <div class="row-num">${w.id}</div>
+      <div class="row-main">
+        <div class="row-title">${w.icon} ${w.name}</div>
+        <div class="row-sub">${w.date} · ${w.papers.length} papers</div>
+      </div>
+      <div class="row-chev">›</div>
+    </div>`).join('');
+  document.getElementById('weeksList').innerHTML = html;
+}
+
+function renderPapers(w){
+  document.getElementById('weekHero').innerHTML = `
+    <h1>${w.icon} ${w.name}</h1>
+    <p>Week ${w.id} · ${w.date} · ${w.papers.length} readings</p>`;
+  const html = w.papers.map((p,i)=>`
+    <div class="list-row" onclick="go('paper-${w.id}-${i}')">
+      <div class="row-num">${i+1}</div>
+      <div class="row-main">
+        <div class="row-title">${p.cite}</div>
+        <div class="row-sub">${escapeAttr(p.full).slice(0,80)}…</div>
+      </div>
+      <div class="row-chev">›</div>
+    </div>`).join('');
+  document.getElementById('papersList').innerHTML = html;
+}
+
+function renderPaper(w,p){
+  document.getElementById('paperBody').innerHTML = `
+    <div class="paper-cite">${p.cite}</div>
+    <div class="paper-meta">${p.full}</div>
+
+    <div class="takeaway-card">
+      <div class="takeaway-label">⭐ Key Takeaway</div>
+      <div class="takeaway-body">${p.takeaway}</div>
+    </div>
+
+    <div class="section-label">Detailed Breakdown</div>
+
+    <div class="detail-section">
+      <h3>🎯 Research Question / Goal</h3>
+      <p>${p.rq}</p>
+    </div>
+
+    <div class="detail-section">
+      <h3>📚 Theory / Framework</h3>
+      <p>${p.theory}</p>
+    </div>
+
+    <div class="detail-section">
+      <h3>🔬 Method</h3>
+      <p>${p.method}</p>
+    </div>
+
+    <div class="detail-section">
+      <h3>📊 Key Findings</h3>
+      <p>${p.findings}</p>
+    </div>
+
+    <div class="detail-section">
+      <h3>💡 Implications / Contribution</h3>
+      <p>${p.implications}</p>
+    </div>`;
+}
+
+function escapeAttr(s){return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+
+// ═══════════════════════════════════════════════════════════════════
+// FLASH CARDS
+// ═══════════════════════════════════════════════════════════════════
+
+let DECK = [];
+let deckIdx = 0;
+
+function buildFullDeck(){
+  const cards = [];
+  WEEKS.forEach(w=>{
+    w.papers.forEach((p,i)=>{
+      cards.push({week:w, paper:p, paperIdx:i});
+    });
+  });
+  return cards;
+}
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function ensureDeck(){
+  if(DECK.length === 0){
+    DECK = shuffle(buildFullDeck());
+    deckIdx = 0;
+  }
+}
+
+function shuffleCards(){
+  DECK = shuffle(buildFullDeck());
+  deckIdx = 0;
+  renderFlash();
+}
+
+function jumpToFirst(){
+  deckIdx = 0;
+  renderFlash();
+}
+
+function flipCard(){
+  document.getElementById('flashCard').classList.toggle('flipped');
+}
+
+function nextCard(){
+  if(deckIdx < DECK.length-1){
+    deckIdx++;
+    renderFlash();
+  }
+}
+
+function prevCard(){
+  if(deckIdx > 0){
+    deckIdx--;
+    renderFlash();
+  }
+}
+
+function openCurrentPaper(){
+  const c = DECK[deckIdx];
+  go(`paper-${c.week.id}-${c.paperIdx}`);
+}
+
+function renderFlash(){
+  const card = DECK[deckIdx];
+  const w = card.week;
+  const p = card.paper;
+
+  // reset flip state
+  document.getElementById('flashCard').classList.remove('flipped');
+
+  document.getElementById('flashFront').innerHTML = `
+    <div class="week-chip">${w.icon} Week ${w.id} · ${w.date}</div>
+    <div class="week-icon">📄</div>
+    <div class="cite">${p.cite}</div>
+    <div class="full">${p.full}</div>
+    <div class="tap-hint">TAP TO REVEAL</div>
+  `;
+
+  document.getElementById('flashBack').innerHTML = `
+    <div class="back-cite">${p.cite}</div>
+    <div class="back-week">${w.icon} ${w.name} · ${w.date}</div>
+
+    <h4>⭐ Takeaway</h4>
+    <p>${p.takeaway}</p>
+
+    <h4>🎯 Research Question</h4>
+    <p>${p.rq}</p>
+
+    <h4>📚 Theory</h4>
+    <p>${p.theory}</p>
+
+    <h4>🔬 Method</h4>
+    <p>${p.method}</p>
+
+    <h4>📊 Key Findings</h4>
+    <p>${p.findings}</p>
+
+    <h4>💡 Implications</h4>
+    <p>${p.implications}</p>
+
+    <div class="tap-hint">TAP TO FLIP BACK</div>
+  `;
+
+  // progress bar + counter
+  const pct = ((deckIdx+1)/DECK.length)*100;
+  document.getElementById('flashFill').style.width = pct+'%';
+  document.getElementById('flashCounter').textContent = `${deckIdx+1} / ${DECK.length}`;
+
+  // disable prev/next at boundaries
+  document.getElementById('flashPrev').disabled = (deckIdx === 0);
+  document.getElementById('flashNext').disabled = (deckIdx === DECK.length-1);
+}
+
+// keyboard shortcuts (desktop testing)
+document.addEventListener('keydown', e=>{
+  if(!document.getElementById('view-flashcards').classList.contains('active')) return;
+  if(e.key === 'ArrowRight') nextCard();
+  else if(e.key === 'ArrowLeft') prevCard();
+  else if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); flipCard(); }
+});
+
+// swipe gestures
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e=>{
+  if(!document.getElementById('view-flashcards').classList.contains('active')) return;
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, {passive:true});
+document.addEventListener('touchend', e=>{
+  if(!document.getElementById('view-flashcards').classList.contains('active')) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.5){
+    if(dx < 0) nextCard(); else prevCard();
+  }
+}, {passive:true});
+
+// ─── Init ───
+window.addEventListener('hashchange',()=>{
+  const r = location.hash.slice(1) || 'home';
+  render(r);
+});
+
+// Init from hash or home
+(function init(){
+  const r = location.hash.slice(1) || 'home';
+  navStack.push(r);
+  render(r);
+})();
+</script>
+</body>
+</html>
