@@ -1,4 +1,4 @@
-# Comps Review
+# Comprehensive Exams Preparation
 
 > A self-built study companion for surviving the doctoral Leadership Comprehensive Exam — one paper at a time, on whatever device happens to be in your hand.
 
